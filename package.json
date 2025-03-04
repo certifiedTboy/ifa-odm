@@ -1,0 +1,21 @@
+{
+  "name": "ifa-odm",
+  "version": "1.0.0",
+  "description": "a mongo db object document mapping for mongodb database",
+  "license": "ISC",
+  "author": "Adebisi Tosin",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongodb": "^6.14.0",
+    "mquery": "^5.0.0",
+    "ms": "^2.1.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0"
+  }
+}

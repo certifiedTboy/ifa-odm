@@ -13,7 +13,7 @@ const user = new Schema(
   { timestamps: true }
 );
 
-// Ifa.createCollection("users", user);
+Ifa.createCollection("users", user);
 
 // user.getGlobalData();
 

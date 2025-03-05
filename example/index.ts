@@ -1,6 +1,7 @@
 import express from "express";
 const app = express();
-import { Ifa, Schema } from "../";
+import { Ifa } from "../";
+import user from "./model";
 
 const PORT = 3000;
 
@@ -19,17 +20,7 @@ async function connectDb() {
   }
 }
 
-const user = new Schema(
-  "users",
-  {
-    firstName: { type: "string", required: true },
-    lastName: { type: "string", required: true },
-    age: { type: "number", required: true },
-    email: { type: "string", unique: true },
-    isGraduated: { type: "boolean", required: true },
-  },
-  { timestamps: true }
-);
+// Ifa.createCollection("users", user);
 
 app.post("/users", async (req, res) => {
   const userData = {

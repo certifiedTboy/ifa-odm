@@ -6,6 +6,8 @@ const connectDb = async () => {
 
     await ifa.connect();
 
+    // ifa.getGlobalData();
+
     console.log("connection successfull");
 
     const userSchema = new Schema(
@@ -18,19 +20,21 @@ const connectDb = async () => {
       { timestamps: true }
     );
 
-    await ifa.createCollection("users", userSchema);
+    Ifa.createCollection("users", userSchema);
 
-    await userSchema.create({
-      username: "John Doe",
-      age: 25,
-      dob: new Date(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    // await Ifa.createCollection("users", userSchema);
 
-    const result = await userSchema.find();
+    // await userSchema.create({
+    //   username: "John Doe",
+    //   age: 25,
+    //   dob: new Date(),
+    //   createdAt: new Date(),
+    //   updatedAt: new Date(),
+    // });
 
-    console.log(result);
+    // const result = await userSchema.find();
+
+    // console.log(result);
   } catch (error) {
     console.log(error);
   }

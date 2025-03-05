@@ -1,4 +1,3 @@
-import { MongoClient } from "mongodb";
 import { CustomError } from "./lib/errors/CustomError";
 
 export class Schema {
@@ -68,4 +67,8 @@ export class Schema {
 
     return result;
   }
+
+  // static getGlobalData() {
+  //   console.log((globalThis as any).dbData);
+  // }
 }

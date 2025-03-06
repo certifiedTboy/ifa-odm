@@ -9,8 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.connect = connect;
-exports.createCollection = createCollection;
+exports.createCollection = exports.connect = void 0;
 const CustomError_1 = require("../errors/CustomError");
 const helpers_1 = require("../../helpers");
 function connect() {
@@ -25,6 +24,7 @@ function connect() {
         }
     });
 }
+exports.connect = connect;
 function createCollection(client, dbName, collectionName, collectionProps) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -77,3 +77,4 @@ function createCollection(client, dbName, collectionName, collectionProps) {
         }
     });
 }
+exports.createCollection = createCollection;

@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUniqueProps = getUniqueProps;
-exports.getCollectionProps = getCollectionProps;
-exports.getRequiredFields = getRequiredFields;
+exports.getRequiredFields = exports.getCollectionProps = exports.getUniqueProps = void 0;
 function getUniqueProps(collectionData) {
     let uniqueProps = {};
     const collectionDataItems = Object.keys(collectionData);
@@ -14,6 +12,7 @@ function getUniqueProps(collectionData) {
     }
     return uniqueProps;
 }
+exports.getUniqueProps = getUniqueProps;
 function getCollectionProps(collectionData) {
     let collectionProps = {};
     const collectionDataItems = Object.keys(collectionData);
@@ -28,6 +27,7 @@ function getCollectionProps(collectionData) {
     }
     return collectionProps;
 }
+exports.getCollectionProps = getCollectionProps;
 function getRequiredFields(collectionData) {
     let requiredFields = [];
     for (let key in collectionData) {
@@ -37,3 +37,4 @@ function getRequiredFields(collectionData) {
     }
     return requiredFields;
 }
+exports.getRequiredFields = getRequiredFields;

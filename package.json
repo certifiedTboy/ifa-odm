@@ -4,11 +4,12 @@
   "description": "a mongo db object document mapping for mongodb database",
   "license": "ISC",
   "author": "Adebisi Tosin",
-  "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "module": "dist/index.js",
+  "files": ["dist"],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+     "build": "tsc"
   },
   "dependencies": {
     "express": "^4.21.2",

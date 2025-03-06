@@ -11,8 +11,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
-    "publish": "npm version patch && npm publish"
+    "build": "tsc"
   },
   "dependencies": {
     "express": "^4.21.2",

@@ -1,3 +1,9 @@
+/**
+ * @method getUniqueProps
+ * @description This method returns an object containing the unique properties of the collection
+ * @param {Object} collectionData
+ * @returns {Object}
+ */
 export function getUniqueProps(collectionData: any) {
   let uniqueProps: any = {};
 
@@ -16,6 +22,12 @@ export function getUniqueProps(collectionData: any) {
   return uniqueProps;
 }
 
+/**
+ * @method getCollectionProps
+ * @description This method returns an object containing the acceptable properties for a mongodb collection
+ * @param {Object} collectionData
+ * @returns {Object}
+ */
 export function getCollectionProps(collectionData: any) {
   let collectionProps: any = {};
 

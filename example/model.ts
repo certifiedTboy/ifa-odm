@@ -1,5 +1,4 @@
-import { Schema } from "../schema";
-import { Ifa } from "../connect";
+import { Schema } from "..";
 
 const user = new Schema(
   "users",
@@ -8,13 +7,9 @@ const user = new Schema(
     lastName: { type: "string", required: true },
     age: { type: "number", required: true },
     email: { type: "string", unique: true },
-    isGraduated: { type: "boolean", required: true },
+    isGraduated: { type: "bool", required: true },
   },
   { timestamps: true }
 );
-
-Ifa.createCollection("users", user);
-
-// user.getGlobalData();
 
 export default user;

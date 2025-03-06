@@ -1,24 +1,9 @@
 import express from "express";
 const app = express();
-import { Ifa } from "../";
+import { connectDb } from "./dbConfig";
 import user from "./model";
 
 const PORT = 3000;
-
-let dbUri = "mongodb://localhost:27017/";
-let dbName = "new-db2";
-
-async function connectDb() {
-  try {
-    const ifa = new Ifa(dbUri, dbName);
-
-    await ifa.connect();
-
-    console.log("connection successfull");
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 // Ifa.createCollection("users", user);
 

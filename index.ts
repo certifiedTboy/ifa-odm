@@ -1,4 +1,5 @@
-import { Ifa } from "./connect";
-import { Schema } from "./schema";
+import { connect } from "./lib/ifa/connect";
+import { Schema } from "./lib/ifa/schema";
+import { Ifa } from "./lib/ifa/model";
 
-export { Ifa, Schema };
+export { connect, Schema, Ifa };

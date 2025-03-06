@@ -9,32 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const _1 = require("./");
+exports.connectDb = void 0;
+const __1 = require("..");
+let dbUri = "mongodb://localhost:27017/";
+let dbName = "new-db2";
+new __1.Ifa(dbUri, dbName);
 const connectDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const ifa = new _1.Ifa("mongodb://localhost:27017/", "ifa-db");
-        yield ifa.connect();
-        // ifa.getGlobalData();
+        yield (0, __1.connect)();
         console.log("connection successfull");
-        const userSchema = new _1.Schema("users", {
-            username: { type: "string", required: true, unique: true },
-            age: { type: "number", required: true },
-            dob: { type: "date", required: false },
-        }, { timestamps: true });
-        _1.Ifa.createCollection("users", userSchema);
-        // await Ifa.createCollection("users", userSchema);
-        // await userSchema.create({
-        //   username: "John Doe",
-        //   age: 25,
-        //   dob: new Date(),
-        //   createdAt: new Date(),
-        //   updatedAt: new Date(),
-        // });
-        // const result = await userSchema.find();
-        // console.log(result);
     }
     catch (error) {
         console.log(error);
     }
 });
-connectDb();
+exports.connectDb = connectDb;

@@ -1,8 +1,34 @@
-import { CustomError } from "./lib/errors/CustomError";
+import { createCollection } from "./connect";
+import { CustomError } from "../errors/CustomError";
 
+function GetCollectionParams<
+  T extends {
+    new (...args: any[]): {
+      collectionName: string;
+      options: any;
+    };
+  }
+>(originalConstructor: T) {
+  return class extends originalConstructor {
+    constructor(...args: any[]) {
+      super(...args);
+
+      const dbData = (globalThis as any).dbData;
+
+      createCollection(
+        dbData.client,
+        dbData.dbName,
+        this.collectionName,
+        this.options
+      );
+    }
+  };
+}
+
+@GetCollectionParams
 export class Schema {
   options: any;
-  colelctionName: string;
+  collectionName: string;
   constructor(
     collectionName: string,
     options: any,
@@ -15,8 +41,7 @@ export class Schema {
           updatedAt: { type: "date" },
         }
       : options;
-
-    this.colelctionName = collectionName;
+    this.collectionName = collectionName;
   }
 
   async create(options: any) {
@@ -37,7 +62,7 @@ export class Schema {
 
     const result = await client
       .db(dbName)
-      .collection(this.colelctionName)
+      .collection(this.collectionName)
       .insertOne(options);
 
     return result;
@@ -49,7 +74,7 @@ export class Schema {
     const { client, dbName } = dbData;
     const result = await client
       .db(dbName)
-      .collection(this.colelctionName)
+      .collection(this.collectionName)
       .find(option)
       .toArray();
 
@@ -62,13 +87,9 @@ export class Schema {
     const { client, dbName } = dbData;
     const result = await client
       .db(dbName)
-      .collection(this.colelctionName)
+      .collection(this.collectionName)
       .findOne(options);
 
     return result;
   }
-
-  // static getGlobalData() {
-  //   console.log((globalThis as any).dbData);
-  // }
 }

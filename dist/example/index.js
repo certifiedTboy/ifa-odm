@@ -14,23 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
-const __1 = require("../");
+const dbConfig_1 = require("./dbConfig");
 const model_1 = __importDefault(require("./model"));
 const PORT = 3000;
-let dbUri = "mongodb://localhost:27017/";
-let dbName = "new-db2";
-function connectDb() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const ifa = new __1.Ifa(dbUri, dbName);
-            yield ifa.connect();
-            console.log("connection successfull");
-        }
-        catch (error) {
-            console.log(error);
-        }
-    });
-}
 // Ifa.createCollection("users", user);
 app.post("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userData = {
@@ -59,7 +45,7 @@ app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 }));
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield connectDb();
+        yield (0, dbConfig_1.connectDb)();
         app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
     });
 }

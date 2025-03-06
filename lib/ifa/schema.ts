@@ -13,7 +13,7 @@ function GetCollectionParams<
     constructor(...args: any[]) {
       super(...args);
 
-      const dbData = (globalThis as any).dbData;
+      const dbData = (global as any).dbData;
 
       createCollection(
         dbData.client,
@@ -56,7 +56,7 @@ export class Schema {
       );
     }
 
-    const dbData = (globalThis as any).dbData;
+    const dbData = (global as any).dbData;
 
     const { client, dbName } = dbData;
 
@@ -69,7 +69,7 @@ export class Schema {
   }
 
   async find(option?: any) {
-    const dbData = (globalThis as any).dbData;
+    const dbData = (global as any).dbData;
 
     const { client, dbName } = dbData;
     const result = await client
@@ -82,7 +82,7 @@ export class Schema {
   }
 
   async findOne(options: any) {
-    const dbData = (globalThis as any).dbData;
+    const dbData = (global as any).dbData;
 
     const { client, dbName } = dbData;
     const result = await client

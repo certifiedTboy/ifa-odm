@@ -16,7 +16,7 @@ const helpers_1 = require("../../helpers");
 function connect() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const dbData = globalThis.dbData;
+            const dbData = global.dbData;
             const { client } = dbData;
             yield client.connect();
         }

@@ -8,7 +8,7 @@ import {
 
 export async function connect() {
   try {
-    const dbData = (globalThis as any).dbData;
+    const dbData = (global as any).dbData;
     const { client } = dbData;
     await client.connect();
   } catch (error) {

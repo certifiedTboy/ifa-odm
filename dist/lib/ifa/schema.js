@@ -22,7 +22,7 @@ function GetCollectionParams(originalConstructor) {
     return class extends originalConstructor {
         constructor(...args) {
             super(...args);
-            const dbData = globalThis.dbData;
+            const dbData = global.dbData;
             (0, connect_1.createCollection)(dbData.client, dbData.dbName, this.collectionName, this.options);
         }
     };
@@ -38,7 +38,7 @@ let Schema = class Schema {
             if (Object.keys(this.options).every((key) => typeof options[key] !== this.options[key].type)) {
                 throw new CustomError_1.CustomError("SchemaValidationError", "Schema validation failed");
             }
-            const dbData = globalThis.dbData;
+            const dbData = global.dbData;
             const { client, dbName } = dbData;
             const result = yield client
                 .db(dbName)
@@ -49,7 +49,7 @@ let Schema = class Schema {
     }
     find(option) {
         return __awaiter(this, void 0, void 0, function* () {
-            const dbData = globalThis.dbData;
+            const dbData = global.dbData;
             const { client, dbName } = dbData;
             const result = yield client
                 .db(dbName)
@@ -61,7 +61,7 @@ let Schema = class Schema {
     }
     findOne(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            const dbData = globalThis.dbData;
+            const dbData = global.dbData;
             const { client, dbName } = dbData;
             const result = yield client
                 .db(dbName)

@@ -1,16 +1,18 @@
 {
   "name": "ifa-odm",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "a mongo db object document mapping for mongodb database",
   "license": "ISC",
   "author": "Adebisi Tosin",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-     "build": "tsc",
-     "publish": "npm version patch && npm publish"
+    "build": "tsc",
+    "publish": "npm version patch && npm publish"
   },
   "dependencies": {
     "express": "^4.21.2",

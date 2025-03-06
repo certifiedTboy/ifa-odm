@@ -50,6 +50,12 @@ export function getCollectionProps(collectionData: any) {
   return collectionProps;
 }
 
+/**
+ * @method getRequiredFields
+ * @description This method returns an array containing the required fields of the collection
+ * @param {Object} collectionData
+ * @returns {Array}
+ */
 export function getRequiredFields(collectionData: any) {
   let requiredFields: string[] = [];
   for (let key in collectionData) {

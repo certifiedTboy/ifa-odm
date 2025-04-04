@@ -1,10 +1,6 @@
 import { MongoClient } from "mongodb";
 import { CustomError } from "../errors/CustomError";
-import {
-  getUniqueProps,
-  getCollectionProps,
-  getRequiredFields,
-} from "../../helpers";
+import { SchemaHelper } from "../../helpers/schema";
 
 export async function connect() {
   try {
@@ -29,8 +25,8 @@ export async function createCollection(
     const validationSchema = {
       $jsonSchema: {
         bsonType: "object",
-        required: getRequiredFields(collectionProps),
-        properties: getCollectionProps(collectionProps),
+        required: SchemaHelper.getRequiredFields(collectionProps),
+        properties: SchemaHelper.getCollectionProps(collectionProps),
       },
     };
 
@@ -51,7 +47,7 @@ export async function createCollection(
         validationLevel: "strict",
       });
 
-      const uniqueProps = getUniqueProps(collectionProps);
+      const uniqueProps = SchemaHelper.getUniqueProps(collectionProps);
 
       for (let data in uniqueProps) {
         await client
@@ -67,7 +63,7 @@ export async function createCollection(
         validator: validationSchema,
         validationLevel: "strict",
       });
-      const uniqueProps = getUniqueProps(collectionProps);
+      const uniqueProps = SchemaHelper.getUniqueProps(collectionProps);
       for (let data in uniqueProps) {
         await client
           .db(dbName)

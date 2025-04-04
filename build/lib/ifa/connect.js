@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCollection = exports.connect = void 0;
 const CustomError_1 = require("../errors/CustomError");
-const helpers_1 = require("../../helpers");
+const schema_1 = require("../../helpers/schema");
 function connect() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -31,8 +31,8 @@ function createCollection(client, dbName, collectionName, collectionProps) {
             const validationSchema = {
                 $jsonSchema: {
                     bsonType: "object",
-                    required: (0, helpers_1.getRequiredFields)(collectionProps),
-                    properties: (0, helpers_1.getCollectionProps)(collectionProps),
+                    required: schema_1.SchemaHelper.getRequiredFields(collectionProps),
+                    properties: schema_1.SchemaHelper.getCollectionProps(collectionProps),
                 },
             };
             const existingCollections = yield client
@@ -46,7 +46,7 @@ function createCollection(client, dbName, collectionName, collectionProps) {
                     validator: validationSchema,
                     validationLevel: "strict",
                 });
-                const uniqueProps = (0, helpers_1.getUniqueProps)(collectionProps);
+                const uniqueProps = schema_1.SchemaHelper.getUniqueProps(collectionProps);
                 for (let data in uniqueProps) {
                     yield client
                         .db(dbName)
@@ -61,7 +61,7 @@ function createCollection(client, dbName, collectionName, collectionProps) {
                     validator: validationSchema,
                     validationLevel: "strict",
                 });
-                const uniqueProps = (0, helpers_1.getUniqueProps)(collectionProps);
+                const uniqueProps = schema_1.SchemaHelper.getUniqueProps(collectionProps);
                 for (let data in uniqueProps) {
                     yield client
                         .db(dbName)

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const __1 = require("..");
-const user = new __1.Schema("users", {
+const schema_1 = require("../lib/ifa/schema");
+const user = new schema_1.Schema("users", {
     firstName: { type: "string", required: true },
     lastName: { type: "string", required: true },
     age: { type: "number", required: true },

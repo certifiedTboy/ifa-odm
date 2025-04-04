@@ -1,4 +1,4 @@
-import { Schema } from "..";
+import { Schema } from "../lib/ifa/schema";
 
 const user = new Schema(
   "users",

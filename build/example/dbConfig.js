@@ -10,13 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectDb = void 0;
-const __1 = require("..");
+const model_1 = require("../lib/ifa/model");
+const connect_1 = require("../lib/ifa/connect");
 let dbUri = "mongodb://localhost:27017/";
 let dbName = "new-db2";
-new __1.Ifa(dbUri, dbName);
+new model_1.Ifa(dbUri, dbName);
 const connectDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield (0, __1.connect)();
+        yield (0, connect_1.connect)();
         console.log("connection successfull");
     }
     catch (error) {

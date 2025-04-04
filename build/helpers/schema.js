@@ -1,6 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRequiredFields = exports.getCollectionProps = exports.getUniqueProps = void 0;
+/**
+ * @method getUniqueProps
+ * @description This method returns an object containing the unique properties of the collection
+ * @param {Object} collectionData
+ * @returns {Object}
+ */
 function getUniqueProps(collectionData) {
     let uniqueProps = {};
     const collectionDataItems = Object.keys(collectionData);
@@ -13,6 +19,12 @@ function getUniqueProps(collectionData) {
     return uniqueProps;
 }
 exports.getUniqueProps = getUniqueProps;
+/**
+ * @method getCollectionProps
+ * @description This method returns an object containing the acceptable properties for a mongodb collection
+ * @param {Object} collectionData
+ * @returns {Object}
+ */
 function getCollectionProps(collectionData) {
     let collectionProps = {};
     const collectionDataItems = Object.keys(collectionData);
@@ -28,6 +40,12 @@ function getCollectionProps(collectionData) {
     return collectionProps;
 }
 exports.getCollectionProps = getCollectionProps;
+/**
+ * @method getRequiredFields
+ * @description This method returns an array containing the required fields of the collection
+ * @param {Object} collectionData
+ * @returns {Array}
+ */
 function getRequiredFields(collectionData) {
     let requiredFields = [];
     for (let key in collectionData) {

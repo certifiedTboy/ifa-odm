@@ -1,34 +1,12 @@
-import { createCollection } from "./connect";
+import { MongoClient } from "mongodb";
+import { GetCollectionParams } from "../decorators/collection-decorators";
 import { CustomError } from "../errors/CustomError";
-
-function GetCollectionParams<
-  T extends {
-    new (...args: any[]): {
-      collectionName: string;
-      options: any;
-    };
-  }
->(originalConstructor: T) {
-  return class extends originalConstructor {
-    constructor(...args: any[]) {
-      super(...args);
-
-      const dbData = (global as any).dbData;
-
-      createCollection(
-        dbData.client,
-        dbData.dbName,
-        this.collectionName,
-        this.options
-      );
-    }
-  };
-}
 
 @GetCollectionParams
 export class Schema {
   options: any;
   collectionName: string;
+  dbData: { dbName: string; client: MongoClient };
   constructor(
     collectionName: string,
     options: any,
@@ -42,6 +20,7 @@ export class Schema {
         }
       : options;
     this.collectionName = collectionName;
+    this.dbData = (global as any).dbData;
   }
 
   async create(options: any) {

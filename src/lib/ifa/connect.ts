@@ -2,6 +2,10 @@ import { MongoClient } from "mongodb";
 import { CustomError } from "../errors/CustomError";
 import { SchemaHelper } from "../../helpers/schema";
 
+/**
+ * @method connect
+ * @description Connect to the database using the connection string provided in the global dbData object.
+ */
 export async function connect() {
   try {
     const dbData = (global as any).dbData;
@@ -15,6 +19,16 @@ export async function connect() {
   }
 }
 
+/**
+ * @method createCollection
+ * @description Creates a new collection in the database with the specified properties and validation schema.
+ * If the collection already exists, it modifies the existing collection with the new properties.
+ * @param {MongoClient} client - The MongoDB client instance.
+ * @param {string} dbName - The name of the database.
+ * @param {string} collectionName - The name of the collection to be created.
+ * @param {any} collectionProps - The properties of the collection to be created.
+ * @returns {Promise<void>} - A promise that resolves when the collection is created successfully.
+ */
 export async function createCollection(
   client: MongoClient,
   dbName: string,

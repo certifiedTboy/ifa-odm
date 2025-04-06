@@ -1,4 +1,5 @@
 import { GetCollectionParams } from "../decorators/collection-decorators";
+import { Ifa } from "./model";
 import { CustomError } from "../errors/CustomError";
 const Kareem = require("kareem");
 
@@ -21,6 +22,8 @@ export class Schema {
       : options;
     this.collectionName = collectionName;
     this.hooks = new Kareem();
+
+    Ifa.addHook("init", () => console.log("init hook"));
   }
 
   async create(options: any) {

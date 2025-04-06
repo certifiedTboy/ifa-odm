@@ -1,7 +1,8 @@
 import { MongoClient } from "mongodb";
-import { Schema } from "./schema";
+const Kareem = require("kareem");
 
 export class Ifa {
+  private static _hooks = new Kareem();
   constructor(connectString: string, dbName: string) {
     console.log("initialize instance of Ifa");
     (global as any).dbData = {
@@ -9,5 +10,7 @@ export class Ifa {
       dbName: dbName,
       client: new MongoClient(connectString),
     };
+
+    Ifa._hooks.execPreSync("init", this);
   }
 }

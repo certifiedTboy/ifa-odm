@@ -1,10 +1,15 @@
-import { createCollection } from "../ifa/connect";
+import Kareem from "kareem";
+import { createCollection } from "../ifa/collection";
+import { Schema } from "../ifa/schema";
+
+const hooks = new Kareem();
 
 export function GetCollectionParams<
   T extends {
     new (...args: any[]): {
       collectionName: string;
       options: any;
+      hooks: any;
     };
   }
 >(originalConstructor: T) {
@@ -12,17 +17,18 @@ export function GetCollectionParams<
     constructor(...args: any[]) {
       super(...args);
 
-      console.log("creating collection");
       const dbData = (global as any).dbData;
 
-      (async (collectionName: string, options: any) => {
-        await createCollection(
-          dbData?.client,
-          dbData?.dbName,
-          collectionName,
-          options
-        );
-      })(this.collectionName, this.options);
+      hooks.post("init", async () => {
+        (async (collectionName: string, options: any) => {
+          await createCollection(
+            dbData?.client,
+            dbData?.dbName,
+            collectionName,
+            options
+          );
+        })(this.collectionName, this.options);
+      });
     }
   };
 }

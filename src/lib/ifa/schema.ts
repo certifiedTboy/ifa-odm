@@ -1,10 +1,12 @@
 import { GetCollectionParams } from "../decorators/collection-decorators";
 import { CustomError } from "../errors/CustomError";
+const Kareem = require("kareem");
 
 @GetCollectionParams
 export class Schema {
   options: any;
   collectionName: string;
+  hooks: any;
   constructor(
     collectionName: string,
     options: any,
@@ -18,6 +20,7 @@ export class Schema {
         }
       : options;
     this.collectionName = collectionName;
+    this.hooks = new Kareem();
   }
 
   async create(options: any) {

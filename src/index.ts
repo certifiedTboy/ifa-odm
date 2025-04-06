@@ -1,5 +1,3 @@
-import { Ifa } from "./lib/ifa/model";
-import { connect } from "./lib/ifa/connect";
-import { Schema } from "./lib/ifa/schema";
-
-export { Ifa, connect, Schema };
+export * from "./lib/ifa/model";
+export * from "./lib/ifa/connect";
+export * from "./lib/ifa/schema";

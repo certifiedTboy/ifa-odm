@@ -17,8 +17,8 @@ export function GetCollectionParams<
 
       (async (collectionName: string, options: any) => {
         await createCollection(
-          dbData.client,
-          dbData.dbName,
+          dbData?.client,
+          dbData?.dbName,
           collectionName,
           options
         );

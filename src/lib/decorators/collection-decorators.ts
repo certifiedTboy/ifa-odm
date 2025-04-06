@@ -20,14 +20,13 @@ export function GetCollectionParams<
       const dbData = (global as any).dbData;
 
       hooks.post("init", async () => {
-        (async (collectionName: string, options: any) => {
-          await createCollection(
-            dbData?.client,
-            dbData?.dbName,
-            collectionName,
-            options
-          );
-        })(this.collectionName, this.options);
+        console.log("creating collection");
+        await createCollection(
+          dbData?.client,
+          dbData?.dbName,
+          this.collectionName,
+          this.options
+        );
       });
     }
   };

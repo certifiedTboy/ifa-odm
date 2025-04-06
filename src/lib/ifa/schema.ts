@@ -1,4 +1,3 @@
-import { MongoClient } from "mongodb";
 import { GetCollectionParams } from "../decorators/collection-decorators";
 import { CustomError } from "../errors/CustomError";
 
@@ -6,7 +5,6 @@ import { CustomError } from "../errors/CustomError";
 export class Schema {
   options: any;
   collectionName: string;
-  dbData: { dbName: string; client: MongoClient };
   constructor(
     collectionName: string,
     options: any,
@@ -20,7 +18,6 @@ export class Schema {
         }
       : options;
     this.collectionName = collectionName;
-    this.dbData = (global as any).dbData;
   }
 
   async create(options: any) {

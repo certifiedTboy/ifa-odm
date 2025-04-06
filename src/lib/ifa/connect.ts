@@ -1,6 +1,9 @@
 import { MongoClient } from "mongodb";
 import { CustomError } from "../errors/CustomError";
 import { SchemaHelper } from "../../helpers/schema";
+import { DatabaseSync } from "node:sqlite";
+
+const database = new DatabaseSync(":memory:");
 
 /**
  * @method connect

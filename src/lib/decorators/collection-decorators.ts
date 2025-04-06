@@ -1,4 +1,3 @@
-import { MongoClient } from "mongodb";
 import { createCollection } from "../ifa/connect";
 
 export function GetCollectionParams<
@@ -6,7 +5,6 @@ export function GetCollectionParams<
     new (...args: any[]): {
       collectionName: string;
       options: any;
-      dbData: { dbName: string; client: MongoClient };
     };
   }
 >(originalConstructor: T) {
@@ -14,18 +12,19 @@ export function GetCollectionParams<
     constructor(...args: any[]) {
       super(...args);
 
-      console.log(this.dbData);
+      console.log("creating collection");
+      const dbData = (global as any).dbData;
 
-      //   const dbData = (global as any).dbData;
+      const onCreateCollection = async () => {
+        await createCollection(
+          dbData.client,
+          dbData.dbName,
+          this.collectionName,
+          this.options
+        );
 
-      //   console.log(dbData);
-
-      createCollection(
-        this.dbData.client,
-        this.dbData.dbName,
-        this.collectionName,
-        this.options
-      );
+        onCreateCollection();
+      };
     }
   };
 }

@@ -15,18 +15,14 @@ export function GetCollectionParams<
       console.log("creating collection");
       const dbData = (global as any).dbData;
 
-      const onCreateCollection = async () => {
+      (async (collectionName: string, options: any) => {
         await createCollection(
           dbData.client,
           dbData.dbName,
-          this.collectionName,
-          this.options
+          collectionName,
+          options
         );
-
-        console.log("heyyy god");
-
-        onCreateCollection();
-      };
+      })(this.collectionName, this.options);
     }
   };
 }

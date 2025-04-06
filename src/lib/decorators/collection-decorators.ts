@@ -22,9 +22,11 @@ export function GetCollectionParams<
           this.collectionName,
           this.options
         );
-      };
 
-      onCreateCollection();
+        console.log("heyyy god");
+
+        onCreateCollection();
+      };
     }
   };
 }

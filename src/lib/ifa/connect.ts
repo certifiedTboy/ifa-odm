@@ -10,11 +10,10 @@ export async function connect() {
   try {
     const dbData = (global as any).dbData;
     const { client, dbName, collectionName, options } = dbData;
-    console.log(client);
-    console.log(dbName);
-    console.log(options);
-    await createCollection(client, dbName, collectionName, options);
+
     await client.connect();
+
+    await createCollection(client, dbName, collectionName, options);
   } catch (error) {
     throw new CustomError(
       "DatabaseConnectionError",

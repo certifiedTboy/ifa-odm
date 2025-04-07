@@ -1,6 +1,6 @@
 {
   "name": "ifa-odm",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "a mongo db object document mapping for mongodb database",
   "license": "ISC",
   "author": "Adebisi Tosin",

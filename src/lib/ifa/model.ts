@@ -10,14 +10,5 @@ export class Ifa {
       dbName: dbName,
       client: new MongoClient(connectString),
     };
-
-    Ifa._hooks.execPreSync("init", this);
-
-    // Run post-init hooks
-    Ifa._hooks.execPostSync("init", this);
-  }
-
-  static addHook(name: string, fn: Function) {
-    Ifa._hooks.post(name, fn);
   }
 }

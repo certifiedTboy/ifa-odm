@@ -1,18 +1,16 @@
-import { GetCollectionParams } from "../decorators/collection-decorators";
-import { Ifa } from "./model";
 import { CustomError } from "../errors/CustomError";
-const Kareem = require("kareem");
 
 // @GetCollectionParams
 export class Schema {
   options: any;
   collectionName: string;
-  hooks: any;
+  timestamps?: { timestamps: boolean };
   constructor(
     collectionName: string,
     options: any,
     timestamps?: { timestamps: boolean }
   ) {
+    console.log("initialize instance of Schema");
     this.options = timestamps?.timestamps
       ? {
           ...options,

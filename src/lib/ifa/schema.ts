@@ -3,7 +3,7 @@ import { Ifa } from "./model";
 import { CustomError } from "../errors/CustomError";
 const Kareem = require("kareem");
 
-@GetCollectionParams
+// @GetCollectionParams
 export class Schema {
   options: any;
   collectionName: string;

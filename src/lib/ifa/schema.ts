@@ -21,9 +21,12 @@ export class Schema {
         }
       : options;
     this.collectionName = collectionName;
-    this.hooks = new Kareem();
 
-    Ifa.addHook("init", () => console.log("init hook"));
+    (global as any).dbData = {
+      collectionName: this.collectionName,
+      options: this.options,
+      timestamps: timestamps ? timestamps : null,
+    };
   }
 
   async create(options: any) {

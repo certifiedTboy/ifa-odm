@@ -20,7 +20,10 @@ export class Schema {
       : options;
     this.collectionName = collectionName;
 
+    const dbData = (global as any).dbData;
+
     (global as any).dbData = {
+      ...dbData,
       collectionName: this.collectionName,
       options: this.options,
       timestamps: timestamps ? timestamps : null,

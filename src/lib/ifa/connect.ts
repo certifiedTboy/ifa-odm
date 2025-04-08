@@ -15,13 +15,9 @@ export async function connect() {
     const dbData = (global as any).dbData;
     const { client, dbName, collectionName, options } = dbData;
 
-    console.log(dbName, collectionName);
-
-    console.log(options);
-
     await client.connect();
 
-    // await createCollection(client, dbName, collectionName, options);
+    await createCollection(client, dbName, collectionName, options);
   } catch (error) {
     console.error(error);
     throw new CustomError(

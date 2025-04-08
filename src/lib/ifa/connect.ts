@@ -1,5 +1,9 @@
 import { CustomError } from "../errors/CustomError";
 import { createCollection } from "./collection";
+import Kareem from "kareem";
+
+// Create a kareem instance globally or per function flow
+// const hooks = new Kareem();
 
 /**
  * @method connect
@@ -11,13 +15,44 @@ export async function connect() {
     const dbData = (global as any).dbData;
     const { client, dbName, collectionName, options } = dbData;
 
-    await client.connect();
+    const result = await client.connect();
 
-    await createCollection(client, dbName, collectionName, options);
+    console.log(result);
+
+    // await createCollection(client, dbName, collectionName, options);
   } catch (error) {
+    console.error(error);
     throw new CustomError(
       "DatabaseConnectionError",
       "database connection failed"
     );
   }
 }
+
+// const createDatabaseCollections = async () => {
+//   const dbData = (global as any).dbData;
+//   const { client, dbName, collectionName, options } = dbData;
+
+//   await createCollection(client, dbName, collectionName, options);
+// };
+
+// // @ts-ignore
+// hooks.pre("save", function (next) {
+//   console.log("Before saving...");
+//   next();
+// });
+
+// // @ts-ignore
+// hooks.post("save", function (res, next) {
+//   console.log("After saving. Result:", res);
+//   next();
+// });
+
+// // @ts-ignore
+// hooks.execPre("save", null, function () {
+//   const result = "User saved successfully!";
+
+//   hooks.execPost("save", null, [result], function () {
+//     console.log("All done!");
+//   });
+// });

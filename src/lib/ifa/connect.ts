@@ -12,7 +12,9 @@ export async function connect() {
 
     const response = await client.connect();
 
-    await createCollection(client, dbName, collectionName, options);
+    if (collectionName && collectionName.trim().length > 0) {
+      await createCollection(client, dbName, collectionName, options);
+    }
     return response.options.dbName;
   } catch (error) {
     console.error(error);

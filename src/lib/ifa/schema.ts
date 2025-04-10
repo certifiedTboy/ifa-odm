@@ -1,6 +1,6 @@
+import { ObjectId } from "mongodb";
 import { CustomError } from "../errors/CustomError";
 
-// @GetCollectionParams
 export class Schema {
   options: any;
   collectionName: string;
@@ -10,7 +10,6 @@ export class Schema {
     options: any,
     timestamps?: { timestamps: boolean }
   ) {
-    console.log("initialize instance of Schema");
     this.options = timestamps?.timestamps
       ? {
           ...options,
@@ -75,6 +74,42 @@ export class Schema {
       .db(dbName)
       .collection(this.collectionName)
       .findOne(options);
+
+    return result;
+  }
+
+  async findOneById(id: ObjectId) {
+    const dbData = (global as any).dbData;
+
+    const { client, dbName } = dbData;
+    const result = await client
+      .db(dbName)
+      .collection(this.collectionName)
+      .findOne({ _id: id });
+
+    return result;
+  }
+
+  async updateOne(options: any) {
+    const dbData = (global as any).dbData;
+
+    const { client, dbName } = dbData;
+    const result = await client
+      .db(dbName)
+      .collection(this.collectionName)
+      .updateOne(options);
+
+    return result;
+  }
+
+  async updateOneById(id: ObjectId, updateData: any) {
+    const dbData = (global as any).dbData;
+
+    const { client, dbName } = dbData;
+    const result = await client
+      .db(dbName)
+      .collection(this.collectionName)
+      .updateOne({ _id: id }, { $set: updateData });
 
     return result;
   }

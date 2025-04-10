@@ -19,6 +19,24 @@ export async function createCollection(
   collectionProps: any
 ) {
   try {
+    if (!dbName || dbName.trim().length === 0) {
+      throw new CustomError("DatabaseNameError", "Database name is required.");
+    }
+
+    if (!collectionName || collectionName.trim().length === 0) {
+      throw new CustomError(
+        "CollectionNameError",
+        "Collection name is required."
+      );
+    }
+
+    if (!collectionProps || Object.keys(collectionProps).length === 0) {
+      throw new CustomError(
+        "CollectionPropsError",
+        "Collection properties are required."
+      );
+    }
+
     const validationSchema = {
       $jsonSchema: {
         bsonType: "object",

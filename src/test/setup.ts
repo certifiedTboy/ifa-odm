@@ -44,10 +44,12 @@ beforeAll(async () => {
 //   }
 // });
 
-// afterAll(async () => {
-//   //   await mongo.stop();
-//   //   await mongoose.connection.close();
-// });
+afterAll(async () => {
+  await mongo.stop();
+  const dbData = (global as any).dbData;
+  const { client } = dbData;
+  client.close();
+});
 
 // (global as any).signin = (id?: string) => {
 //   // Build a JWT payload.  { id, email }

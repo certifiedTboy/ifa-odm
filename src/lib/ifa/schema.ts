@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { CustomError } from "../errors/CustomError";
+import { Validator } from "../../helpers/validators";
 
 export class Schema {
   options: any;
@@ -90,14 +91,25 @@ export class Schema {
     return result;
   }
 
-  async updateOne(options: any) {
+  async updateOne(id: ObjectId, options: any) {
+    if (
+      Object.keys(this.options).every(
+        (key) => typeof options[key] !== this.options[key].type
+      )
+    ) {
+      throw new CustomError(
+        "SchemaValidationError",
+        "Schema validation failed"
+      );
+    }
+
     const dbData = (global as any).dbData;
 
     const { client, dbName } = dbData;
     const result = await client
       .db(dbName)
       .collection(this.collectionName)
-      .updateOne(options);
+      .updateOne({ _id: id }, { $set: options });
 
     return result;
   }

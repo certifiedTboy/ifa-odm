@@ -28,11 +28,18 @@ export class Validator {
     }
   }
 
-  static validateDocProps(options: {}, doc: {}): void {
+  static validateDocProps(options: any, doc: any): void {
     if (Object.keys(doc).length === 0) {
       throw new CustomError("EmptyDoc", "Document is empty");
     }
 
-    // TODO: Add more validation for the document properties
+    if (
+      Object.keys(options).every((key) => typeof doc[key] !== options[key].type)
+    ) {
+      throw new CustomError(
+        "SchemaValidationError",
+        "Schema validation failed"
+      );
+    }
   }
 }

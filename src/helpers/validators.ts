@@ -16,30 +16,28 @@ export class Validator {
     }
   }
 
-  static validateArrayDoc(arrayData: {}[]): void {
+  static validateArrayDoc(arrayData: any[]): void {
     if (!Array.isArray(arrayData)) {
       throw new CustomError("InvalidArray", "Invalid array provided");
     }
   }
 
   static validateDoc(doc: {}): void {
-    if (typeof doc !== "object") {
+    if (typeof doc !== "object" || Object.keys(doc).length === 0) {
       throw new CustomError("InvalidDoc", "Invalid document provided");
     }
   }
 
   static validateDocProps(options: any, doc: any): void {
-    if (Object.keys(doc).length === 0) {
-      throw new CustomError("EmptyDoc", "Document is empty");
-    }
+    const optionKeys = Object.keys(options);
 
-    if (
-      Object.keys(options).every((key) => typeof doc[key] !== options[key].type)
-    ) {
-      throw new CustomError(
-        "SchemaValidationError",
-        "Schema validation failed"
-      );
+    for (let key of optionKeys) {
+      if (typeof doc[key] !== options[key].type) {
+        throw new CustomError(
+          "SchemaValidationError",
+          "Schema validation failed"
+        );
+      }
     }
   }
 }

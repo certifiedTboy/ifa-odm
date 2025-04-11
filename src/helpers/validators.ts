@@ -10,6 +10,15 @@ import { CustomError } from "../lib/errors/CustomError";
  * @static validateDocProps - Validates if the provided document has valid collection properties and is not empty.
  */
 export class Validator {
+  private static validateDate(date: Date): boolean {
+    const yy = String(date.getFullYear()).slice(-2);
+    const mm = String(date.getMonth() + 1).padStart(2, "0"); // getMonth is 0-based
+    const dd = String(date.getDate()).padStart(2, "0");
+
+    const formattedDate = `${yy}-${mm}-${dd}`;
+    let newDate = new Date(formattedDate);
+    return !isNaN(newDate.getTime());
+  }
   static validateObjectId(id: ObjectId): void {
     if (!ObjectId.isValid(id)) {
       throw new CustomError("InvalidObjectId", "Invalid ObjectId provided");
@@ -32,11 +41,17 @@ export class Validator {
     const optionKeys = Object.keys(options);
 
     for (let key of optionKeys) {
-      if (typeof doc[key] !== options[key].type) {
-        throw new CustomError(
-          "SchemaValidationError",
-          "Schema validation failed"
-        );
+      if (key === "createdAt" || key === "updatedAt") {
+        if (this.validateDate(doc[key])) {
+          throw new CustomError("InvalidDate", "Invalid date provided");
+        }
+      } else {
+        if (typeof doc[key] !== options[key].type) {
+          throw new CustomError(
+            "SchemaValidationError",
+            "Schema validation failed"
+          );
+        }
       }
     }
   }

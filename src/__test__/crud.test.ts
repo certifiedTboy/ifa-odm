@@ -16,7 +16,7 @@ describe("Schema class", () => {
     expect(userSchema.options).toEqual({
       username: { type: "string", required: true, unique: true },
       password: { type: "string", required: true },
-      createAt: { type: "date" },
+      createdAt: { type: "date" },
       updatedAt: { type: "date" },
     });
   });

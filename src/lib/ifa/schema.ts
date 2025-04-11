@@ -31,7 +31,7 @@ export class Schema {
     this.options = timestamps?.timestamps
       ? {
           ...options,
-          createAt: { type: "date" },
+          createdAt: { type: "date" },
           updatedAt: { type: "date" },
         }
       : options;

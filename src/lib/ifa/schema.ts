@@ -92,6 +92,8 @@ export class Schema {
     const { client, dbName } = (global as any).dbData;
 
     if (options) {
+      Validator.validateQueryDoc(options);
+
       const result = await client
         .db(dbName)
         .collection(this.collectionName)
@@ -112,6 +114,16 @@ export class Schema {
 
   async findOne(options: any) {
     const { client, dbName } = (global as any).dbData;
+
+    if (!options) {
+      throw new CustomError("InvalidQuery", "Invalid query provided");
+    }
+
+    if (Array.isArray(options)) {
+      throw new CustomError("InvalidQuery", "Invalid query provided");
+    }
+
+    Validator.validateQueryDoc(options);
 
     const result = await client
       .db(dbName)

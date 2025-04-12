@@ -11,4 +11,5 @@ export enum BysonTypes {
   Undefined = "undefined",
   ObjectId = "objectId",
   Timestamp = "timestamp",
+  Float = "decimal",
 }

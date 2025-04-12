@@ -11,13 +11,17 @@ import { CustomError } from "../lib/errors/CustomError";
  */
 export class Validator {
   private static validateDate(date: Date): boolean {
-    const yy = String(date.getFullYear()).slice(-2);
-    const mm = String(date.getMonth() + 1).padStart(2, "0"); // getMonth is 0-based
-    const dd = String(date.getDate()).padStart(2, "0");
+    try {
+      const yy = String(date.getFullYear()).slice(-2);
+      const mm = String(date.getMonth() + 1).padStart(2, "0"); // getMonth is 0-based
+      const dd = String(date.getDate()).padStart(2, "0");
 
-    const formattedDate = `${yy}-${mm}-${dd}`;
-    let newDate = new Date(formattedDate);
-    return !isNaN(newDate.getTime());
+      const formattedDate = `${yy}-${mm}-${dd}`;
+      let newDate = new Date(formattedDate);
+      return !isNaN(newDate.getTime());
+    } catch (error) {
+      throw new CustomError("InvalidDate", "Invalid date provided");
+    }
   }
   static validateObjectId(id: ObjectId): void {
     if (!ObjectId.isValid(id)) {
@@ -26,7 +30,7 @@ export class Validator {
   }
 
   static validateArrayDoc(arrayData: any[]): void {
-    if (!Array.isArray(arrayData)) {
+    if (!Array.isArray(arrayData) || arrayData.length <= 0) {
       throw new CustomError("InvalidArray", "Invalid array provided");
     }
   }

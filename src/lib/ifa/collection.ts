@@ -86,6 +86,8 @@ export async function createCollection(
           .createIndex({ [data]: 1 }, { unique: true });
       }
     }
+
+    client.close();
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw new CustomError("DatabaseCollectionError", error.message);

@@ -23,7 +23,7 @@ export class Validator {
       throw new CustomError("InvalidDate", "Invalid date provided");
     }
   }
-  static validateObjectId(id: ObjectId): void {
+  static validateObjectId(id: string): void {
     if (!ObjectId.isValid(id)) {
       throw new CustomError("InvalidObjectId", "Invalid ObjectId provided");
     }
@@ -56,12 +56,25 @@ export class Validator {
           throw new CustomError("InvalidDate", "Invalid date provided");
         }
       } else {
-        if (typeof doc[key] !== options[key].type) {
+        if (doc[key] && typeof doc[key] !== options[key].type) {
           throw new CustomError(
             "SchemaValidationError",
             "Schema validation failed"
           );
         }
+      }
+    }
+  }
+
+  static validateUpdateDocProps(options: any, doc: any): void {
+    const optionKeys = Object.keys(options);
+
+    for (let key of optionKeys) {
+      if (doc[key] && typeof doc[key] !== options[key].type) {
+        throw new CustomError(
+          "SchemaValidationError",
+          "Schema validation failed"
+        );
       }
     }
   }

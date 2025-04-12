@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { CustomError } from "../errors/CustomError";
 import { Validator } from "../../helpers/validators";
+import { MongodbError } from "../errors/MongodbError";
 
 /**
  * @class Schema
@@ -20,9 +21,9 @@ import { Validator } from "../../helpers/validators";
  * @static deleteMany - Deletes multiple documents in the collection based on the provided options.
  */
 export class Schema {
-  options: any;
-  collectionName: string;
-  timestamps?: { timestamps: boolean };
+  private options: any;
+  private collectionName: string;
+  private timestamps?: { timestamps: boolean };
   constructor(
     collectionName: string,
     options: any,
@@ -48,128 +49,217 @@ export class Schema {
   }
 
   async create(options: any) {
-    // validate if options is a valid object
-    Validator.validateDoc(options);
-    Validator.validateDocProps(this.options, options);
+    try {
+      // validate if options is a valid object
+      Validator.validateDoc(options);
+      Validator.validateDocProps(this.options, options);
 
-    const dbData = (global as any).dbData;
+      const { client, dbName } = (global as any).dbData;
 
-    const { client, dbName } = dbData;
+      const result = await client
+        .db(dbName)
+        .collection(this.collectionName)
+        .insertOne(options);
 
-    const result = await client
-      .db(dbName)
-      .collection(this.collectionName)
-      .insertOne(options);
+      // query database for the created document
+      const createdDoc = await client
+        .db(dbName)
+        .collection(this.collectionName)
+        .findOne({ _id: result.insertedId });
 
-    // query database for the created document
-    const createdDoc = await client
-      .db(dbName)
-      .collection(this.collectionName)
-      .findOne({ _id: result.insertedId });
+      return { ...result, ...createdDoc };
+    } catch (error: unknown) {
+      if (error instanceof CustomError && error.type) {
+        throw new CustomError(error.type, error.message);
+      }
 
-    return { ...result, ...createdDoc };
+      if (error instanceof Error) {
+        throw new MongodbError(error.message);
+      }
+    }
   }
 
   async createMany(options: any[]) {
-    Validator.validateArrayDoc(options);
+    try {
+      Validator.validateArrayDoc(options);
 
-    for (let doc of options) {
-      Validator.validateDoc(doc);
-      Validator.validateDocProps(this.options, doc);
+      for (let doc of options) {
+        Validator.validateDoc(doc);
+        Validator.validateDocProps(this.options, doc);
+      }
+
+      const { client, dbName } = (global as any).dbData;
+
+      const result = await client
+        .db(dbName)
+        .collection(this.collectionName)
+        .insertMany(options);
+
+      return result;
+    } catch (error: unknown) {
+      if (error instanceof CustomError && error.type) {
+        throw new CustomError(error.type, error.message);
+      }
+
+      if (error instanceof Error) {
+        throw new MongodbError(error.message);
+      }
     }
-
-    const { client, dbName } = (global as any).dbData;
-
-    const result = await client
-      .db(dbName)
-      .collection(this.collectionName)
-      .insertMany(options);
-
-    return result;
   }
 
   async find(options?: any) {
-    const { client, dbName } = (global as any).dbData;
+    try {
+      const { client, dbName } = (global as any).dbData;
 
-    if (options) {
+      if (options) {
+        Validator.validateQueryDoc(options);
+
+        const result = await client
+          .db(dbName)
+          .collection(this.collectionName)
+          .find(options)
+          .toArray();
+
+        return result;
+      }
+
+      const result = await client
+        .db(dbName)
+        .collection(this.collectionName)
+        .find({})
+        .toArray();
+
+      return result;
+    } catch (error: unknown) {
+      if (error instanceof CustomError && error.type) {
+        throw new CustomError(error.type, error.message);
+      }
+
+      if (error instanceof Error) {
+        throw new MongodbError(error.message);
+      }
+    }
+  }
+
+  async findOne(options: any) {
+    try {
+      const { client, dbName } = (global as any).dbData;
+
+      if (!options) {
+        throw new CustomError("InvalidQuery", "Invalid query provided");
+      }
+
+      if (Array.isArray(options)) {
+        throw new CustomError("InvalidQuery", "Invalid query provided");
+      }
+
       Validator.validateQueryDoc(options);
 
       const result = await client
         .db(dbName)
         .collection(this.collectionName)
-        .find(options)
-        .toArray();
+        .findOne(options);
 
       return result;
+    } catch (error: unknown) {
+      if (error instanceof CustomError && error.type) {
+        throw new CustomError(error.type, error.message);
+      }
+
+      if (error instanceof Error) {
+        throw new MongodbError(error.message);
+      }
     }
-
-    const result = await client
-      .db(dbName)
-      .collection(this.collectionName)
-      .find({})
-      .toArray();
-
-    return result;
   }
 
-  async findOne(options: any) {
-    const { client, dbName } = (global as any).dbData;
+  async findOneById(id: string) {
+    try {
+      if (!id) {
+        throw new CustomError("InvalidQuery", "ObjectId is required");
+      }
 
-    if (!options) {
-      throw new CustomError("InvalidQuery", "Invalid query provided");
+      Validator.validateObjectId(id);
+
+      const { client, dbName } = (global as any).dbData;
+
+      const result = await client
+        .db(dbName)
+        .collection(this.collectionName)
+        .findOne({ _id: new ObjectId(id) });
+
+      return result;
+    } catch (error: unknown) {
+      if (error instanceof CustomError && error.type) {
+        throw new CustomError(error.type, error.message);
+      }
+
+      if (error instanceof Error) {
+        throw new MongodbError(error.message);
+      }
     }
+  }
 
-    if (Array.isArray(options)) {
-      throw new CustomError("InvalidQuery", "Invalid query provided");
+  async updateOne(filter: any, options: any) {
+    try {
+      if (!filter) {
+        throw new CustomError("InvalidQuery", "filter prop is required");
+      }
+
+      if (ObjectId.isValid(filter?._id)) {
+        throw new CustomError(
+          "InvalidQuery",
+          "ObjectId is not accepted user updateOneById instead"
+        );
+      }
+
+      Validator.validateDoc(options);
+      Validator.validateUpdateDocProps(this.options, options);
+
+      const { client, dbName } = (global as any).dbData;
+
+      const result = await client
+        .db(dbName)
+        .collection(this.collectionName)
+        .updateOne(
+          { ...filter },
+          { $set: options },
+          { returnDocument: "after" }
+        );
+
+      return result;
+    } catch (error: unknown) {
+      if (error instanceof CustomError && error.type) {
+        throw new CustomError(error.type, error.message);
+      }
+
+      if (error instanceof Error) {
+        throw new MongodbError(error.message);
+      }
     }
-
-    Validator.validateQueryDoc(options);
-
-    const result = await client
-      .db(dbName)
-      .collection(this.collectionName)
-      .findOne(options);
-
-    return result;
   }
 
-  async findOneById(id: ObjectId) {
-    const { client, dbName } = (global as any).dbData;
+  async updateOneById(id: ObjectId | string, updateData: any) {
+    try {
+      const { client, dbName } = (global as any).dbData;
 
-    const result = await client
-      .db(dbName)
-      .collection(this.collectionName)
-      .findOne({ _id: id });
+      const result = await client
+        .db(dbName)
+        .collection(this.collectionName)
+        .updateOne(
+          { _id: id },
+          { $set: updateData },
+          { returnDocument: "after" }
+        );
 
-    return result;
-  }
+      return result;
+    } catch (error: unknown) {
+      if (error instanceof CustomError && error.type) {
+        throw new CustomError(error.type, error.message);
+      }
 
-  async updateOne(prop: ObjectId, options: any) {
-    Validator.validateDocProps(this.options, options);
-    Validator.validateDoc(options);
-
-    const { client, dbName } = (global as any).dbData;
-
-    const result = await client
-      .db(dbName)
-      .collection(this.collectionName)
-      .updateOne({ prop }, { $set: options }, { returnDocument: "after" });
-
-    return result;
-  }
-
-  async updateOneById(id: ObjectId, updateData: any) {
-    const { client, dbName } = (global as any).dbData;
-
-    const result = await client
-      .db(dbName)
-      .collection(this.collectionName)
-      .updateOne(
-        { _id: id },
-        { $set: updateData },
-        { returnDocument: "after" }
-      );
-
-    return result;
+      if (error instanceof Error) {
+        throw new MongodbError(error.message);
+      }
+    }
   }
 }

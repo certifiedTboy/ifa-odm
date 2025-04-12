@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest --watchAll --no-cache  --detectOpenHandles"
+    "test": "jest --watchAll --no-cache  --detectOpenHandles",
+    "test:ci":"jest"
   },
   "jest": {
     "preset": "ts-jest",

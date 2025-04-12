@@ -12,7 +12,11 @@
   "scripts": {
     "build": "tsc",
     "test": "jest --watchAll --no-cache  --detectOpenHandles",
+<<<<<<< HEAD
     "test:ci":"jest"
+=======
+    "test:ci": "jest"
+>>>>>>> 3f54535bb41f0b29bca0112ac00f18a55c6ed5fb
   },
   "jest": {
     "preset": "ts-jest",

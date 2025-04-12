@@ -92,7 +92,40 @@ describe("createMany method", () => {
     const result = await userSchema.createMany(doc);
     expect(result).toBeDefined();
     expect(result.acknowledged).toBe(true);
-    // expect(result.username).toBe("testuser");
-    // expect(result.password).toBe("password123");
+  });
+});
+
+describe("find method", () => {
+  it("should throw an error if an invalid option is provided", async () => {
+    await expect(userSchema.find([])).rejects.toThrow("Invalid query provided");
+  });
+
+  it("returns all documents if no option is provided", async () => {
+    const result = await userSchema.find();
+    expect(result).toBeDefined();
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  it("should return a matching array of documents if option is provided", async () => {
+    const result = await userSchema.find({ username: "testuser" });
+
+    expect(result).toBeDefined();
+    expect(result.length).toEqual(2);
+    expect(result[0].username).toBe("testuser");
+    expect(result[0].password).toBe("password123");
+  });
+});
+
+describe("findOne method", () => {
+  it("should throw an error if no option or an invalid option is provided", async () => {
+    await expect(userSchema.findOne([])).rejects.toThrow(
+      "Invalid query provided"
+    );
+  });
+
+  it("should return a single document if option is provided", async () => {
+    const result = await userSchema.findOne({ username: "testuser" });
+    expect(result).toBeDefined();
+    expect(result.username).toBe("testuser");
   });
 });

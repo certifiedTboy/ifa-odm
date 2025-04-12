@@ -41,6 +41,12 @@ export class Validator {
     }
   }
 
+  static validateQueryDoc(doc: {}): void {
+    if (typeof doc !== "object" || Object.keys(doc).length === 0) {
+      throw new CustomError("InvalidQuery", "Invalid query provided");
+    }
+  }
+
   static validateDocProps(options: any, doc: any): void {
     const optionKeys = Object.keys(options);
 

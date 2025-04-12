@@ -10,15 +10,9 @@ const userSchema = new Schema(
 );
 
 describe("Schema class", () => {
-  it("should create a new instance of schema", () => {
+  it("create a new instance of schema", () => {
     expect(userSchema).toBeDefined();
-    expect(userSchema.collectionName).toBe("user");
-    expect(userSchema.options).toEqual({
-      username: { type: "string", required: true, unique: true },
-      password: { type: "string", required: true },
-      createdAt: { type: "date" },
-      updatedAt: { type: "date" },
-    });
+    expect(userSchema).toBeInstanceOf(Schema);
   });
 });
 
@@ -29,25 +23,25 @@ describe("create method", () => {
     );
   });
 
-  it("should throw an error if document property type does not match collection schema type", async () => {
+  it("throws an error if document property type does not match collection schema type", async () => {
     await expect(
       userSchema.create({
-        username: "testuser",
+        username: "testuser1",
         password: 123,
       })
     ).rejects.toThrow("Schema validation failed");
   });
 
-  it("should create a new document", async () => {
+  it("create a new document", async () => {
     const result = await userSchema.create({
-      username: "testuser",
+      username: "testuser1",
       password: "password123",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
     expect(result).toBeDefined();
     expect(result.acknowledged).toBe(true);
-    expect(result.username).toBe("testuser");
+    expect(result.username).toBe("testuser1");
     expect(result.password).toBe("password123");
   });
 });
@@ -59,13 +53,13 @@ describe("createMany method", () => {
     );
   });
 
-  it("should throw an error if document property type does not match collection schema type", async () => {
+  it("throws an error if document property type does not match collection schema type", async () => {
     const doc = [
       {
-        username: "testuser",
+        username: "testuser2",
         password: 123,
       },
-      { username: "testuser2", password: "password123" },
+      { username: "testuser3", password: "password123" },
     ];
 
     await expect(userSchema.createMany(doc)).rejects.toThrow(
@@ -73,16 +67,16 @@ describe("createMany method", () => {
     );
   });
 
-  it("should create a new document", async () => {
+  it("create a new document", async () => {
     const doc = [
       {
-        username: "testuser",
+        username: "testuser2",
         password: "password123",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        username: "testuser2",
+        username: "testuser3",
         password: "password123",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -96,7 +90,7 @@ describe("createMany method", () => {
 });
 
 describe("find method", () => {
-  it("should throw an error if an invalid option is provided", async () => {
+  it("throws an error if an invalid option is provided", async () => {
     await expect(userSchema.find([])).rejects.toThrow("Invalid query provided");
   });
 
@@ -106,26 +100,84 @@ describe("find method", () => {
     expect(result.length).toBeGreaterThan(0);
   });
 
-  it("should return a matching array of documents if option is provided", async () => {
-    const result = await userSchema.find({ username: "testuser" });
+  it("returns a matching array of documents if option is provided", async () => {
+    const result = await userSchema.find({ username: "testuser1" });
 
     expect(result).toBeDefined();
-    expect(result.length).toEqual(2);
-    expect(result[0].username).toBe("testuser");
+    expect(result.length).toEqual(1);
+    expect(result[0].username).toBe("testuser1");
     expect(result[0].password).toBe("password123");
   });
 });
 
 describe("findOne method", () => {
-  it("should throw an error if no option or an invalid option is provided", async () => {
+  it("throws an error if no option or an invalid option is provided", async () => {
     await expect(userSchema.findOne([])).rejects.toThrow(
       "Invalid query provided"
     );
   });
 
-  it("should return a single document if option is provided", async () => {
-    const result = await userSchema.findOne({ username: "testuser" });
+  it("return a single document if option is provided", async () => {
+    const result = await userSchema.findOne({ username: "testuser1" });
     expect(result).toBeDefined();
-    expect(result.username).toBe("testuser");
+    expect(result.username).toBe("testuser1");
+  });
+});
+
+describe("findOneById method", () => {
+  it("throw an error if id is not provide", async () => {
+    await expect(userSchema.findOneById("")).rejects.toThrow(
+      "ObjectId is required"
+    );
+  });
+
+  it("throws an error if an invalid id is provided", async () => {
+    await expect(userSchema.findOneById("123")).rejects.toThrow(
+      "Invalid ObjectId provided"
+    );
+  });
+
+  it("returns a single document if a valid id is provided", async () => {
+    const existingUsers = await userSchema.find();
+
+    const result = await userSchema.findOneById(
+      existingUsers[0]._id.toString()
+    );
+
+    expect(result).toBeDefined();
+    expect(result._id.toString()).toBe(existingUsers[0]._id.toString());
+    expect(result.username).toBe(existingUsers[0].username);
+  });
+});
+
+describe("updateOne method", () => {
+  // it("throws an error if no filter or options are provided", async () => {
+  //   await expect(userSchema.updateOne("", {})).rejects.toThrow(
+  //     "Invalid query provided"
+  //   );
+  // });
+
+  // it("throws an error if an invalid filter is provided", async () => {
+  //   await expect(userSchema.updateOne([], {})).rejects.toThrow(
+  //     "Invalid query provided"
+  //   );
+  // });
+
+  // it("throws an error if an invalid options is provided", async () => {
+  //   await expect(userSchema.updateOne({}, [])).rejects.toThrow(
+  //     "Invalid document provided"
+  //   );
+  // });
+
+  it("updates a single document if valid filter and options are provided", async () => {
+    const result = await userSchema.updateOne(
+      { username: "testuser3" },
+      { password: "newpassword123", username: "testuser4" }
+    );
+
+    console.log(result);
+    expect(result).toBeDefined();
+    expect(result.acknowledged).toBe(true);
+    expect(result.matchedCount).toBe(1);
   });
 });

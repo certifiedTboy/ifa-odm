@@ -51,3 +51,48 @@ describe("create method", () => {
     expect(result.password).toBe("password123");
   });
 });
+
+describe("createMany method", () => {
+  it("should throw an error if document array is not provided or is empty", async () => {
+    await expect(userSchema.createMany([])).rejects.toThrow(
+      "Invalid array provided"
+    );
+  });
+
+  it("should throw an error if document property type does not match collection schema type", async () => {
+    const doc = [
+      {
+        username: "testuser",
+        password: 123,
+      },
+      { username: "testuser2", password: "password123" },
+    ];
+
+    await expect(userSchema.createMany(doc)).rejects.toThrow(
+      "Schema validation failed"
+    );
+  });
+
+  it("should create a new document", async () => {
+    const doc = [
+      {
+        username: "testuser",
+        password: "password123",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        username: "testuser2",
+        password: "password123",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+
+    const result = await userSchema.createMany(doc);
+    expect(result).toBeDefined();
+    expect(result.acknowledged).toBe(true);
+    // expect(result.username).toBe("testuser");
+    // expect(result.password).toBe("password123");
+  });
+});

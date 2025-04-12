@@ -73,14 +73,13 @@ export class Schema {
   async createMany(options: any[]) {
     Validator.validateArrayDoc(options);
 
-    options.forEach((option) => {
-      Validator.validateDoc(option);
-      Validator.validateDocProps(this.options, option);
-    });
+    for (let doc of options) {
+      Validator.validateDoc(doc);
+      Validator.validateDocProps(this.options, doc);
+    }
 
-    const dbData = (global as any).dbData;
+    const { client, dbName } = (global as any).dbData;
 
-    const { client, dbName } = dbData;
     const result = await client
       .db(dbName)
       .collection(this.collectionName)
@@ -90,9 +89,7 @@ export class Schema {
   }
 
   async find(options?: any) {
-    const dbData = (global as any).dbData;
-
-    const { client, dbName } = dbData;
+    const { client, dbName } = (global as any).dbData;
 
     if (options) {
       const result = await client
@@ -114,9 +111,8 @@ export class Schema {
   }
 
   async findOne(options: any) {
-    const dbData = (global as any).dbData;
+    const { client, dbName } = (global as any).dbData;
 
-    const { client, dbName } = dbData;
     const result = await client
       .db(dbName)
       .collection(this.collectionName)
@@ -126,9 +122,8 @@ export class Schema {
   }
 
   async findOneById(id: ObjectId) {
-    const dbData = (global as any).dbData;
+    const { client, dbName } = (global as any).dbData;
 
-    const { client, dbName } = dbData;
     const result = await client
       .db(dbName)
       .collection(this.collectionName)
@@ -141,9 +136,8 @@ export class Schema {
     Validator.validateDocProps(this.options, options);
     Validator.validateDoc(options);
 
-    const dbData = (global as any).dbData;
+    const { client, dbName } = (global as any).dbData;
 
-    const { client, dbName } = dbData;
     const result = await client
       .db(dbName)
       .collection(this.collectionName)
@@ -153,9 +147,8 @@ export class Schema {
   }
 
   async updateOneById(id: ObjectId, updateData: any) {
-    const dbData = (global as any).dbData;
+    const { client, dbName } = (global as any).dbData;
 
-    const { client, dbName } = dbData;
     const result = await client
       .db(dbName)
       .collection(this.collectionName)

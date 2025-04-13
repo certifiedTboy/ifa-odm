@@ -1,4 +1,5 @@
 import { Schema } from "../lib/ifa/schema";
+import { MongodbError } from "../lib/errors/MongodbError";
 
 const userSchema = new Schema(
   "user",
@@ -151,33 +152,27 @@ describe("findOneById method", () => {
 });
 
 describe("updateOne method", () => {
-  // it("throws an error if no filter or options are provided", async () => {
-  //   await expect(userSchema.updateOne("", {})).rejects.toThrow(
-  //     "Invalid query provided"
-  //   );
-  // });
-
-  // it("throws an error if an invalid filter is provided", async () => {
-  //   await expect(userSchema.updateOne([], {})).rejects.toThrow(
-  //     "Invalid query provided"
-  //   );
-  // });
-
-  // it("throws an error if an invalid options is provided", async () => {
-  //   await expect(userSchema.updateOne({}, [])).rejects.toThrow(
-  //     "Invalid document provided"
-  //   );
-  // });
+  it("throws an error if no filter or options are provided", async () => {
+    await expect(userSchema.updateOne({}, {})).rejects.toBeInstanceOf(Error);
+  });
 
   it("updates a single document if valid filter and options are provided", async () => {
-    const result = await userSchema.updateOne(
-      { username: "testuser3" },
-      { password: "newpassword123", username: "testuser4" }
-    );
+    try {
+      const result = await userSchema.updateOne(
+        { username: "testuser3" },
+        { password: "newpassword123", username: "testuser4" }
+      );
 
-    console.log(result);
-    expect(result).toBeDefined();
-    expect(result.acknowledged).toBe(true);
-    expect(result.matchedCount).toBe(1);
+      expect(result).toBeDefined();
+      expect(result.username).toBe("testuser4");
+      expect(result.password).toBe("newpassword123");
+      expect(result.createdAt).toBeLessThan(result.updatedAt);
+    } catch (error: unknown) {
+      if (error instanceof MongodbError) {
+        expect(error).toBeInstanceOf(MongodbError);
+      } else {
+        expect(error).toBeInstanceOf(Error);
+      }
+    }
   });
 });

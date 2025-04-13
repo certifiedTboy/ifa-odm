@@ -86,7 +86,7 @@ export async function createCollection(
           .createIndex({ [data]: 1 }, { unique: true });
       }
     }
-
+    // close mongodb client connection
     client.close();
   } catch (error: unknown) {
     if (error instanceof Error) {

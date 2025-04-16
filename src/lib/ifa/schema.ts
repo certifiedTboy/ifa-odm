@@ -240,16 +240,24 @@ export class Schema {
     }
   }
 
-  async updateOneById(id: ObjectId | string, updateData: any) {
+  async updateOneById(id: ObjectId | string, options: any) {
     try {
       const { client, dbName } = (global as any).dbData;
+
+      if (!id) {
+        throw new CustomError("InvalidQuery", "ObjectId is required");
+      }
+
+      Validator.validateObjectId(id);
+      Validator.validateDoc(options);
+      Validator.validateUpdateDocProps(this.options, options);
 
       const result = await client
         .db(dbName)
         .collection(this.collectionName)
         .findOneAndUpdate(
           { _id: id },
-          { $set: updateData, updatedAt: new Date() },
+          { $set: options, updatedAt: new Date() },
           { returnDocument: "after" }
         );
 

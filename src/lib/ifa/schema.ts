@@ -1,3 +1,4 @@
+const mquery = require("mquery");
 import { ObjectId } from "mongodb";
 import { CustomError } from "../errors/CustomError";
 import { Validator } from "../../helpers/validators";
@@ -213,6 +214,7 @@ export class Schema {
       }
 
       Validator.validateDoc(options);
+      Validator.validateQueryDoc(filter);
       Validator.validateUpdateDocProps(this.options, options);
 
       const { client, dbName } = (global as any).dbData;
@@ -220,9 +222,9 @@ export class Schema {
       const result = await client
         .db(dbName)
         .collection(this.collectionName)
-        .updateOne(
+        .findOneAndUpdate(
           { ...filter },
-          { $set: options },
+          { $set: { ...options, updatedAt: new Date() } },
           { returnDocument: "after" }
         );
 
@@ -238,16 +240,24 @@ export class Schema {
     }
   }
 
-  async updateOneById(id: ObjectId | string, updateData: any) {
+  async updateOneById(id: ObjectId | string, options: any) {
     try {
       const { client, dbName } = (global as any).dbData;
+
+      if (!id) {
+        throw new CustomError("InvalidQuery", "ObjectId is required");
+      }
+
+      Validator.validateObjectId(id);
+      Validator.validateDoc(options);
+      Validator.validateUpdateDocProps(this.options, options);
 
       const result = await client
         .db(dbName)
         .collection(this.collectionName)
-        .updateOne(
+        .findOneAndUpdate(
           { _id: id },
-          { $set: updateData },
+          { $set: options, updatedAt: new Date() },
           { returnDocument: "after" }
         );
 

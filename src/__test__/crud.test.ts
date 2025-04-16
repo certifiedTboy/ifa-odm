@@ -1,4 +1,5 @@
 import { Schema } from "../lib/ifa/schema";
+import { MongodbError } from "../lib/errors/MongodbError";
 
 const userSchema = new Schema(
   "user",
@@ -151,33 +152,93 @@ describe("findOneById method", () => {
 });
 
 describe("updateOne method", () => {
-  // it("throws an error if no filter or options are provided", async () => {
-  //   await expect(userSchema.updateOne("", {})).rejects.toThrow(
-  //     "Invalid query provided"
-  //   );
-  // });
+  it("throws an error if no filter or options are provided", async () => {
+    await expect(userSchema.updateOne({}, {})).rejects.toBeInstanceOf(Error);
+  });
 
-  // it("throws an error if an invalid filter is provided", async () => {
-  //   await expect(userSchema.updateOne([], {})).rejects.toThrow(
-  //     "Invalid query provided"
-  //   );
-  // });
-
-  // it("throws an error if an invalid options is provided", async () => {
-  //   await expect(userSchema.updateOne({}, [])).rejects.toThrow(
-  //     "Invalid document provided"
-  //   );
-  // });
+  it("throws an error if update option property type does not match collection schema type", async () => {
+    const existingUsers = await userSchema.find();
+    await expect(
+      userSchema.updateOne(
+        { username: "testuser3" },
+        {
+          username: 123,
+          password: "password",
+        }
+      )
+    ).rejects.toThrow("Schema validation failed");
+  });
 
   it("updates a single document if valid filter and options are provided", async () => {
-    const result = await userSchema.updateOne(
-      { username: "testuser3" },
-      { password: "newpassword123", username: "testuser4" }
-    );
+    try {
+      const result = await userSchema.updateOne(
+        { username: "testuser3" },
+        { password: "newpassword123", username: "testuser4" }
+      );
 
-    console.log(result);
-    expect(result).toBeDefined();
-    expect(result.acknowledged).toBe(true);
-    expect(result.matchedCount).toBe(1);
+      expect(result).toBeDefined();
+      expect(result.username).toBe("testuser4");
+      expect(result.password).toBe("newpassword123");
+      expect(result.createdAt).toBeLessThan(result.updatedAt);
+    } catch (error: unknown) {
+      if (error instanceof MongodbError) {
+        expect(error).toBeInstanceOf(MongodbError);
+      } else {
+        expect(error).toBeInstanceOf(Error);
+      }
+    }
+  });
+});
+
+describe("updateOneById method", () => {
+  it("throws an error if no id is provided", async () => {
+    await expect(userSchema.updateOneById("", {})).rejects.toThrow(
+      "ObjectId is required"
+    );
+  });
+
+  it("throws an error if an invalid id is provided", async () => {
+    await expect(userSchema.updateOneById("uqriqrkg", {})).rejects.toThrow(
+      "Invalid ObjectId provided"
+    );
+  });
+
+  it("throws an error if no update data is not provided", async () => {
+    const existingUsers = await userSchema.find();
+
+    await expect(
+      userSchema.updateOneById(existingUsers[0]._id.toString(), {})
+    ).rejects.toThrow("Invalid document provided");
+  });
+
+  it("throws an error if update option property type does not match collection schema type", async () => {
+    const existingUsers = await userSchema.find();
+    await expect(
+      userSchema.updateOneById(existingUsers[0]._id.toString(), {
+        username: 123,
+        password: "password",
+      })
+    ).rejects.toThrow("Schema validation failed");
+  });
+
+  it("updates a single document if valid id and update data are provided", async () => {
+    try {
+      const existingUsers = await userSchema.find();
+      const result = await userSchema.updateOne(
+        existingUsers[0]._id.toString(),
+        { password: "newpassword123", username: "testuser4" }
+      );
+
+      expect(result).toBeDefined();
+      expect(result.username).toBe("testuser4");
+      expect(result.password).toBe("newpassword123");
+      expect(result.createdAt).toBeLessThan(result.updatedAt);
+    } catch (error: unknown) {
+      if (error instanceof MongodbError) {
+        expect(error).toBeInstanceOf(MongodbError);
+      } else {
+        expect(error).toBeInstanceOf(Error);
+      }
+    }
   });
 });

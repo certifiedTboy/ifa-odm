@@ -23,7 +23,7 @@ export class Validator {
       throw new CustomError("InvalidDate", "Invalid date provided");
     }
   }
-  static validateObjectId(id: string): void {
+  static validateObjectId(id: string | ObjectId): void {
     if (!ObjectId.isValid(id)) {
       throw new CustomError("InvalidObjectId", "Invalid ObjectId provided");
     }

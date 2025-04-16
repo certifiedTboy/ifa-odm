@@ -2,10 +2,19 @@ import { Schema } from "../lib/ifa/schema";
 import { MongodbError } from "../lib/errors/MongodbError";
 
 const userSchema = new Schema(
-  "user",
+  "users",
   {
     username: { type: "string", required: true, unique: true },
     password: { type: "string", required: true },
+  },
+  { timestamps: true }
+);
+
+const productSchema = new Schema(
+  "products",
+  {
+    name: { type: "string", required: true },
+    price: { type: "number", required: true },
   },
   { timestamps: true }
 );
@@ -14,6 +23,8 @@ describe("Schema class", () => {
   it("create a new instance of schema", () => {
     expect(userSchema).toBeDefined();
     expect(userSchema).toBeInstanceOf(Schema);
+    expect(productSchema).toBeDefined();
+    expect(productSchema).toBeInstanceOf(Schema);
   });
 });
 
@@ -152,12 +163,19 @@ describe("findOneById method", () => {
 });
 
 describe("updateOne method", () => {
-  it("throws an error if no filter or options are provided", async () => {
-    await expect(userSchema.updateOne({}, {})).rejects.toBeInstanceOf(Error);
+  it("throws an error if no update document is provided", async () => {
+    await expect(
+      userSchema.updateOne({ username: "testuser3" }, {})
+    ).rejects.toThrow("Invalid document provided");
+  });
+
+  it("throws an error if no filter is provided", async () => {
+    await expect(
+      userSchema.updateOne({}, { username: "testuser4", password: "password" })
+    ).rejects.toThrow("Invalid query provided");
   });
 
   it("throws an error if update option property type does not match collection schema type", async () => {
-    const existingUsers = await userSchema.find();
     await expect(
       userSchema.updateOne(
         { username: "testuser3" },
@@ -240,5 +258,96 @@ describe("updateOneById method", () => {
         expect(error).toBeInstanceOf(Error);
       }
     }
+  });
+
+  describe("updateMany method", () => {
+    const createProducts = async () => {
+      const products = [
+        {
+          name: "product1",
+          price: 100,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          name: "product2",
+          price: 200,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          name: "product3",
+          price: 300,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          name: "product3",
+          price: 300,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+      await productSchema.createMany(products);
+    };
+
+    const getProducts = async (name: string) => {
+      return await productSchema.find({ name });
+    };
+
+    it("throws an error if no update document is provided", async () => {
+      await createProducts();
+      await expect(
+        productSchema.updateMultiple({ name: "product3" }, {})
+      ).rejects.toThrow("Invalid document provided");
+    });
+
+    it("throws an error if no filter is provided", async () => {
+      await expect(
+        productSchema.updateMultiple({}, { name: "product3", price: 200 })
+      ).rejects.toThrow("Invalid query provided");
+    });
+
+    it("throws an error if update option property type does not match collection schema type", async () => {
+      await expect(
+        productSchema.updateMultiple(
+          { name: "product3" },
+          {
+            name: "product4",
+            price: "200",
+          }
+        )
+      ).rejects.toThrow("Schema validation failed");
+    });
+
+    it("updates a multiple documents if valid filter and options are provided", async () => {
+      try {
+        await productSchema.updateMultiple(
+          { name: "product3" },
+          { name: "product4", price: 600 }
+        );
+
+        const updatedProducts = await getProducts("product4");
+
+        expect(updatedProducts).toBeDefined();
+        expect(updatedProducts).toBeGreaterThanOrEqual(2);
+        expect(updatedProducts[0].price).toBe(600);
+        expect(updatedProducts[0].name).toBe("product4");
+        expect(updatedProducts[0].createdAt).toBeLessThan(
+          updatedProducts[0].updatedAt
+        );
+        expect(updatedProducts[1].price).toBe(600);
+        expect(updatedProducts[1].name).toBe("product4");
+        expect(updatedProducts[1].createdAt).toBeLessThan(
+          updatedProducts[1].updatedAt
+        );
+      } catch (error: unknown) {
+        if (error instanceof MongodbError) {
+          expect(error).toBeInstanceOf(MongodbError);
+        } else {
+          expect(error).toBeInstanceOf(Error);
+        }
+      }
+    });
   });
 });

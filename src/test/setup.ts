@@ -16,11 +16,11 @@ beforeAll(async () => {
 
   let dbData = (global as any).dbData;
 
-  const collectionName = "users";
+  const collectionName = "blogs";
 
   const collectionData = {
-    username: { type: "string", required: true },
-    password: { type: "number", required: true },
+    title: { type: "string", required: true },
+    desc: { type: "string", required: true },
   };
 
   const timestamps = { timestamps: true };

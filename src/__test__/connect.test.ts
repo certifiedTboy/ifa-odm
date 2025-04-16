@@ -1,11 +1,13 @@
 import { connect } from "../lib/ifa/connect";
 import { createCollection } from "../lib/ifa/collection";
 
-it("should connect to the database and database collection created", async () => {
-  const dbData = (global as any).dbData;
+describe("connect function", () => {
+  it("should connect to the database and database collection created", async () => {
+    const dbData = (global as any).dbData;
 
-  const response = await connect();
+    const response = await connect();
 
-  expect(response).toEqual(dbData.dbName);
-  expect(createCollection).toHaveBeenCalled();
+    expect(response).toEqual(dbData.dbName);
+    expect(createCollection).toHaveBeenCalled();
+  });
 });

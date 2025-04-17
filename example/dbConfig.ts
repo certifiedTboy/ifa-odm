@@ -1,5 +1,5 @@
-import { Ifa } from "../lib/ifa/model";
-import { connect } from "../lib/ifa/connect";
+import { Ifa } from "../src/lib/ifa/model";
+import { connect } from "../src/lib/ifa/connect";
 
 let dbUri = "mongodb://localhost:27017/";
 let dbName = "new-db2";

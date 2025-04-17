@@ -233,18 +233,22 @@ describe("updateOneById method", () => {
     ).rejects.toThrow("Schema validation failed");
   });
 
-  // it("updates a single document if valid id and update data are provided", async () => {
-  //   const existingUsers = await userSchema.find();
-  //   const result = await userSchema.updateOne(existingUsers[0]._id.toString(), {
-  //     username: "testuser4",
-  //     password: "newpassword123",
-  //   });
+  it("updates a single document if valid id and update data are provided", async () => {
+    const existingUsers = await userSchema.find();
+    const result = await userSchema.updateOneById(
+      existingUsers[0]._id.toString(),
+      {
+        username: "testuser4",
+        password: "newpassword123",
+      }
+    );
 
-  //   expect(result).toBeDefined();
-  //   // expect(result.username).toBe("testuser4");
-  //   // expect(result.password).toBe("newpassword123");
-  //   // expect(result.createdAt).toBeLessThan(result.updatedAt);
-  // });
+    expect(result.username).toBe("testuser4");
+    expect(result.password).toBe("newpassword123");
+    expect(new Date(result.createdAt).getTime()).toBeLessThan(
+      new Date(result.updatedAt).getTime()
+    );
+  });
 
   describe("updateMany method", () => {
     const createProducts = async () => {

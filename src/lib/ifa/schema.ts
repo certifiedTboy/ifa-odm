@@ -251,6 +251,20 @@ export class Schema {
 
       const { client, dbName } = (global as any).dbData;
 
+      if (filter._id) {
+        Validator.validateObjectId(filter._id);
+        const result = await client
+          .db(dbName)
+          .collection(this.collectionName)
+          .findOneAndUpdate(
+            { _id: new ObjectId(filter?._id) },
+            { $set: { ...options, updatedAt: new Date() } },
+            { returnDocument: "after" }
+          );
+
+        return result;
+      }
+
       const result = await client
         .db(dbName)
         .collection(this.collectionName)
@@ -297,8 +311,8 @@ export class Schema {
         .db(dbName)
         .collection(this.collectionName)
         .findOneAndUpdate(
-          { _id: id },
-          { $set: options, updatedAt: new Date() },
+          { _id: new ObjectId(id) },
+          { $set: { ...options, updatedAt: new Date() } },
           { returnDocument: "after" }
         );
 

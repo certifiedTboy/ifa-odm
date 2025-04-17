@@ -368,6 +368,17 @@ export class Schema {
     try {
       const { client, dbName } = (global as any).dbData;
       Validator.validateQueryDoc(filter);
+
+      if (filter._id) {
+        Validator.validateObjectId(filter._id);
+        const result = await client
+          .db(dbName)
+          .collection(this.collectionName)
+          .deleteOne({ _id: new ObjectId(filter?._id) });
+
+        return result;
+      }
+
       const result = await client
         .db(dbName)
         .collection(this.collectionName)
@@ -402,9 +413,10 @@ export class Schema {
       Validator.validateObjectId(id);
 
       const { client, dbName } = (global as any).dbData;
-      const result = await client(dbName)
+      const result = await client
+        .db(dbName)
         .collection(this.collectionName)
-        .deleteOne({ _id: id });
+        .deleteOne({ _id: new ObjectId(id) });
 
       return result;
     } catch (error: unknown) {

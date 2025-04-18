@@ -17,7 +17,7 @@ export async function connect() {
     }
     return response.options.dbName;
   } catch (error) {
-    console.error(error);
+    console.log(error);
     throw new CustomError(
       "DatabaseConnectionError",
       "database connection failed"

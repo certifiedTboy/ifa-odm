@@ -3,6 +3,8 @@ const app = express();
 import { connectDb } from "./dbConfig";
 import user from "./model";
 
+app.use(express.json());
+
 const PORT = 3000;
 
 app.post("/users", async (req, res) => {
@@ -18,6 +20,7 @@ app.post("/users", async (req, res) => {
     const result = await user.create(userData);
     res.json(result);
   } catch (error) {
+    console.log(error);
     res.status(400).json(error);
   }
 });
@@ -27,6 +30,7 @@ app.get("/users", async (req, res) => {
     const result = await user.find();
     res.json(result);
   } catch (error) {
+    console.log(error);
     res.status(400).json(error);
   }
 });

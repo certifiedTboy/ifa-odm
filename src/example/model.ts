@@ -1,7 +1,7 @@
 import { Schema } from "../lib/ifa/schema";
 
 const user = new Schema(
-  "users",
+  "contacts",
   {
     firstName: { type: "string", required: true },
     lastName: { type: "string", required: true },

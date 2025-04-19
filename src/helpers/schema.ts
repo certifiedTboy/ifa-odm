@@ -141,4 +141,32 @@ export class SchemaHelper {
 
     return requiredFields;
   }
+
+  /**
+   * @method updateDocTimestamps
+   * @description This method updates the createdAt and updatedAt timestamps of a document
+   * @param {Object} doc - The document to be updated
+   * @returns {Object} - The updated document with new timestamps
+   */
+  static updateDocTimestamps(doc: {}) {
+    const newDoc = { ...doc, createdAt: new Date(), updatedAt: new Date() };
+    return newDoc;
+  }
+
+  /**
+   * @updateArrayDocTimestamps
+   * @description This method updates the createdAt and updatedAt timestamps of an array of documents
+   * @param {Array} arrayDoc - The array of documents to be updated
+   * @returns {Array} - The updated array of documents with new timestamps
+   */
+  static updateArrayDocTimestamps(arrayDoc: {}[]): Array<{}> {
+    const newArrayDoc = [];
+    for (let item of arrayDoc) {
+      let newItem = { ...item, createdAt: new Date(), updatedAt: new Date() };
+
+      newArrayDoc.push(newItem);
+    }
+
+    return newArrayDoc;
+  }
 }

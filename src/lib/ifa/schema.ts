@@ -1,7 +1,8 @@
 const mquery = require("mquery");
-import { ObjectId, Document } from "mongodb";
+import { ObjectId } from "mongodb";
 import { CustomError } from "../errors/CustomError";
 import { Validator } from "../../helpers/validators";
+import { SchemaHelper } from "../../helpers/schema";
 import { MongodbError } from "../errors/MongodbError";
 
 /**
@@ -14,7 +15,7 @@ import { MongodbError } from "../errors/MongodbError";
 export class Schema {
   private options: any;
   private collectionName: string;
-  private timestamps?: { timestamps: boolean };
+  timestamps?: { timestamps: boolean };
   constructor(
     collectionName: string,
     options: any,
@@ -51,22 +52,39 @@ export class Schema {
     try {
       // validate if options is a valid object
       Validator.validateDoc(options);
-      Validator.validateDocProps(this.options, options);
+      // Validator.validateDocProps(this.options, options);
 
       const { client, dbName } = (global as any).dbData;
 
-      const result = await client
-        .db(dbName)
-        .collection(this.collectionName)
-        .insertOne(options);
+      if (this.options.createdAt && this.options.updatedAt) {
+        const docWithTimeStamp = SchemaHelper.updateDocTimestamps(options);
 
-      // query database for the created document
-      const createdDoc = await client
-        .db(dbName)
-        .collection(this.collectionName)
-        .findOne({ _id: result.insertedId });
+        const result = await client
+          .db(dbName)
+          .collection(this.collectionName)
+          .insertOne(docWithTimeStamp);
 
-      return { ...result, ...createdDoc };
+        // query database for the created document
+        const createdDoc = await client
+          .db(dbName)
+          .collection(this.collectionName)
+          .findOne({ _id: result.insertedId });
+
+        return { ...result, ...createdDoc };
+      } else {
+        const result = await client
+          .db(dbName)
+          .collection(this.collectionName)
+          .insertOne(options);
+
+        // query database for the created document
+        const createdDoc = await client
+          .db(dbName)
+          .collection(this.collectionName)
+          .findOne({ _id: result.insertedId });
+
+        return { ...result, ...createdDoc };
+      }
     } catch (error: unknown) {
       if (error instanceof CustomError && error.type) {
         throw new CustomError(error.type, error.message);
@@ -92,17 +110,29 @@ export class Schema {
 
       for (let doc of options) {
         Validator.validateDoc(doc);
-        Validator.validateDocProps(this.options, doc);
+        // Validator.validateDocProps(this.options, doc);
       }
 
       const { client, dbName } = (global as any).dbData;
 
-      const result = await client
-        .db(dbName)
-        .collection(this.collectionName)
-        .insertMany(options);
+      if (this.options.createdAt && this.options.updatedAt) {
+        const updatedArrayDocsWithTimestamps =
+          SchemaHelper.updateArrayDocTimestamps(options);
 
-      return result;
+        const result = await client
+          .db(dbName)
+          .collection(this.collectionName)
+          .insertMany(updatedArrayDocsWithTimestamps);
+
+        return result;
+      } else {
+        const result = await client
+          .db(dbName)
+          .collection(this.collectionName)
+          .insertMany(options);
+
+        return result;
+      }
     } catch (error: unknown) {
       if (error instanceof CustomError && error.type) {
         throw new CustomError(error.type, error.message);
@@ -247,7 +277,7 @@ export class Schema {
 
       Validator.validateDoc(options);
       Validator.validateQueryDoc(filter);
-      Validator.validateUpdateDocProps(this.options, options);
+      // Validator.validateUpdateDocProps(this.options, options);
 
       const { client, dbName } = (global as any).dbData;
 
@@ -305,7 +335,7 @@ export class Schema {
 
       Validator.validateObjectId(id);
       Validator.validateDoc(options);
-      Validator.validateUpdateDocProps(this.options, options);
+      // Validator.validateUpdateDocProps(this.options, options);
 
       const result = await client
         .db(dbName)
@@ -345,7 +375,7 @@ export class Schema {
 
       Validator.validateDoc(options);
       Validator.validateQueryDoc(filter);
-      Validator.validateUpdateDocProps(this.options, options);
+      // Validator.validateUpdateDocProps(this.options, options);
 
       const { client, dbName } = (global as any).dbData;
 

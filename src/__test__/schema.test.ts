@@ -35,15 +35,12 @@ describe("create method", () => {
   });
 
   // it("throws an error if document property type does not match collection schema type", async () => {
-  //   const result = await userSchema.create({
-  //     username: "testuser1",
-  //     password: true,
-  //   });
-
-  //   console.log(result);
-  //   // await expect(
-
-  //   // ).rejects.toThrow("Schema validation failed");
+  //   await expect(
+  //     userSchema.create({
+  //       username: 12215414,
+  //       password: "1225262626",
+  //     })
+  //   ).rejects.toThrow("Schema validation failed");
   // });
 
   it("create a new document", async () => {
@@ -84,14 +81,10 @@ describe("createMany method", () => {
       {
         username: "testuser2",
         password: "password123",
-        createdAt: new Date(),
-        updatedAt: new Date(),
       },
       {
         username: "testuser3",
         password: "password123",
-        createdAt: new Date(),
-        updatedAt: new Date(),
       },
     ];
 
@@ -256,26 +249,18 @@ describe("updateOneById method", () => {
         {
           name: "product1",
           price: 100,
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           name: "product2",
           price: 200,
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           name: "product3",
           price: 300,
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
         {
           name: "product3",
           price: 300,
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
       ];
       await productSchema.createMany(products);

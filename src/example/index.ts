@@ -20,8 +20,9 @@ app.post("/users", async (req, res) => {
     const result = await user.create(userData);
     res.json(result);
   } catch (error) {
-    console.log(error);
-    res.status(400).json(error);
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
   }
 });
 
@@ -30,8 +31,9 @@ app.get("/users", async (req, res) => {
     const result = await user.find();
     res.json(result);
   } catch (error) {
-    console.log(error);
-    res.status(400).json(error);
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
   }
 });
 
@@ -41,7 +43,9 @@ app.get("/users/:id", async (req, res) => {
     const result = await user.findOneById(id);
     res.json(result);
   } catch (error) {
-    res.status(400).json(error);
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
   }
 });
 
@@ -61,7 +65,9 @@ app.put("/users/:id", async (req, res) => {
     const result = await user.updateOneById(id, userData);
     res.json(result);
   } catch (error) {
-    res.status(400).json(error);
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
   }
 });
 
@@ -71,7 +77,9 @@ app.delete("/users/:id", async (req, res) => {
     const result = await user.removeOneById(id);
     res.json(result);
   } catch (error) {
-    res.status(400).json(error);
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
   }
 });
 

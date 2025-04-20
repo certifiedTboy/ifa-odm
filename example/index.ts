@@ -103,7 +103,6 @@ app.post("/blogs", async (req, res) => {
 app.get("/blogs", async (req, res) => {
   try {
     const blogs = await blog.find();
-    blog.populate();
 
     res.status(201).json(blogs);
   } catch (error) {

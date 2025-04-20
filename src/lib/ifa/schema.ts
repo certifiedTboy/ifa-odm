@@ -1,4 +1,3 @@
-const mquery = require("mquery");
 import { ObjectId } from "mongodb";
 import { CustomError } from "../errors/CustomError";
 import { Validator } from "../../helpers/validators";
@@ -29,7 +28,6 @@ export class Schema {
         }
       : options;
     this.collectionName = collectionName;
-
     const dbData = (global as any).dbData;
 
     (global as any).dbData = {
@@ -43,7 +41,6 @@ export class Schema {
    * @method create
    * @description Creates a new document in the collection.
    * @param {object} options - The document to be created.
-   * @returns {Promise<Document>} - The created document.
    * @throws {CustomError} - If the document is invalid or if there is an error during creation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -99,7 +96,6 @@ export class Schema {
    * @method createMany
    * @description Creates multiple documents in the collection.
    * @param {Array<object>} options - The documents to be created.
-   * @return {Promise<Document[]>} - The created documents.
    * @throws {CustomError} - If the documents are invalid or if there is an error during creation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -147,7 +143,6 @@ export class Schema {
    * @method find
    * @description Finds documents in the collection based on the provided options.
    * @param {object} [options] - The query options to filter the documents.
-   * @return {Promise<Document[]>} - The found documents.
    * @throws {CustomError} - If the query is invalid or if there is an error during the operation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -189,7 +184,6 @@ export class Schema {
    * @method findOne
    * @description Finds a single document in the collection based on the provided options.
    * @param {object} options - The query options to filter the document.
-   * @return {Promise<Document>} - The found document.
    * @throws {CustomError} - If the query is invalid or if there is an error during the operation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -228,7 +222,6 @@ export class Schema {
    * @method findOneById
    * @description Finds a single document in the collection by its ObjectId.
    * @param id - The ObjectId of the document to be found.
-   * @return {Promise<Document>} - The found document.
    * @throws {CustomError} - If the ObjectId is invalid or if there is an error during the operation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -264,7 +257,6 @@ export class Schema {
    * @description Updates a single document in the collection based on the provided filter and options.
    * @param {object} filter - The filter to find the document to be updated.
    * @param {object} options - The update options to be applied to the document.
-   * @return {Promise<Document>} - The updated document.
    * @throws {CustomError} - If the filter or options are invalid or if there is an error during the operation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -320,7 +312,6 @@ export class Schema {
    * @description Updates a single document in the collection by its ObjectId.
    * @param {ObjectId | string} id - The ObjectId of the document to be updated.
    * @param {object} options - The update options to be applied to the document.
-   * @returns {Promise<Document>} - The updated document.
    * @throws {CustomError} - If the ObjectId is invalid or if there is an error during the operation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -362,7 +353,6 @@ export class Schema {
    * @description Updates multiple documents in the collection based on the provided filter and options.
    * @param {object} filter - The filter to find the documents to be updated.
    * @param {object} options - The update options to be applied to the documents.
-   * @return {Promise<Document>} - The result of the update operation.
    * @throws {CustomError} - If the filter or options are invalid or if there is an error during the operation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -403,7 +393,6 @@ export class Schema {
    * @method removeOne
    * @description Removes a single document from the collection based on the provided filter.
    * @param {object} filter - The filter to find the document to be removed.
-   * @return {Promise<Document>} - The result of the remove operation.
    * @throws {CustomError} - If the filter is invalid or if there is an error during the operation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -443,7 +432,6 @@ export class Schema {
    * @method removeOneById
    * @description Removes a single document from the collection by its ObjectId.
    * @param {ObjectId | string} id - The ObjectId of the document to be removed.
-   * @return {Promise<Document>} - The result of the remove operation.
    * @throws {CustomError} - If the ObjectId is invalid or if there is an error during the operation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -477,7 +465,6 @@ export class Schema {
    * @method removeMany
    * @description Removes multiple documents from the collection based on the provided filter.
    * @param {object} filter - The filter to find the documents to be removed.
-   * @return {Promise<Document>} - The result of the remove operation.
    * @throws {CustomError} - If the filter is invalid or if there is an error during the operation.
    * @throws {MongodbError} - If there is an error during the MongoDB operation.
    */
@@ -505,9 +492,5 @@ export class Schema {
         throw new MongodbError(error.message);
       }
     }
-  }
-
-  async populate() {
-    console.log(this.options);
   }
 }

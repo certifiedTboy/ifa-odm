@@ -32,29 +32,63 @@ export class SchemaHelper {
   static getCollectionProps(collectionData: any): object {
     let collectionProps: any = {};
 
-    const collectionDataItems = Object.keys(collectionData);
+    const collectionDataKeys = Object.keys(collectionData);
 
-    for (let collectionKey of collectionDataItems) {
+    // loop over the collectionData keys
+    for (let collectionKey of collectionDataKeys) {
+      // check if the collectionData is an array
       if (Array.isArray(collectionData[collectionKey])) {
+        // check if the collectionData is an array of objects
         if (collectionData[collectionKey][0].type) {
-          collectionProps[collectionKey] = {
-            bsonType: "array",
-            maxItems: collectionData[collectionKey][0]?.maxItems,
-            minItems: collectionData[collectionKey][0]?.minItems,
-            items: {
-              bsonType: collectionData[collectionKey][0].type,
-            },
-          };
+          // TODO
+          // check if type is === "ref"
+          // update associated data fields if its an array
+
+          if (collectionData[collectionKey][0]?.maxItems) {
+            collectionProps[collectionKey] = {
+              bsonType: "array",
+              maxItems: collectionData[collectionKey][0]?.maxItems,
+              minItems: collectionData[collectionKey][0]?.minItems,
+              items: {
+                bsonType:
+                  collectionData[collectionKey][0].type === "ref"
+                    ? "objectId"
+                    : collectionData[collectionKey][0].type,
+              },
+            };
+          } else {
+            collectionProps[collectionKey] = {
+              bsonType: "array",
+              items: {
+                bsonType:
+                  collectionData[collectionKey][0].type === "ref"
+                    ? "objectId"
+                    : collectionData[collectionKey][0].type,
+              },
+            };
+          }
         } else {
-          collectionProps[collectionKey] = {
-            bsonType: "array",
-            maxItems: collectionData[collectionKey][0]?.maxItems,
-            minItems: collectionData[collectionKey][0]?.minItems,
-            items: {
-              bsonType: "object",
-              properties: {},
-            },
-          };
+          if (collectionData[collectionKey][0]?.maxItems) {
+            collectionProps[collectionKey] = {
+              bsonType: "array",
+              maxItems: collectionData[collectionKey][0]?.maxItems,
+              minItems: collectionData[collectionKey][0]?.minItems,
+              items: {
+                bsonType: "object",
+                properties: {},
+              },
+            };
+          } else {
+            collectionProps[collectionKey] = {
+              bsonType: "array",
+              maxItems: collectionData[collectionKey][0]?.maxItems,
+              minItems: collectionData[collectionKey][0]?.minItems,
+              items: {
+                bsonType: "object",
+                properties: {},
+              },
+            };
+          }
 
           for (let item of collectionData[collectionKey]) {
             for (let key in item) {
@@ -85,7 +119,6 @@ export class SchemaHelper {
               bsonType: "object",
               properties: {},
             };
-
             for (let item of Object.keys(collectionData[collectionKey])) {
               if (Array.isArray(collectionData[collectionKey][item])) {
                 for (let key of collectionData[collectionKey][item]) {
@@ -99,8 +132,7 @@ export class SchemaHelper {
               } else {
                 collectionProps[collectionKey].properties[item] = {
                   ...collectionData[collectionKey][item],
-                  bsonType: (collectionData[collectionKey][item].type =
-                    collectionData[collectionKey][item].type),
+                  bsonType: collectionData[collectionKey][item].type,
                 };
                 delete collectionProps[collectionKey].properties[item].type;
                 delete collectionProps[collectionKey].properties[item].required;
@@ -110,18 +142,23 @@ export class SchemaHelper {
           } else {
             collectionProps[collectionKey] = {
               ...collectionData[collectionKey],
-              bsonType: (collectionData[collectionKey].type =
-                collectionData[collectionKey].type),
+              bsonType:
+                collectionData[collectionKey].type === "ref"
+                  ? "objectId"
+                  : collectionData[collectionKey].type,
             };
 
             delete collectionProps[collectionKey].required;
             delete collectionProps[collectionKey].type;
             delete collectionProps[collectionKey].unique;
+            delete collectionProps[collectionKey].ref;
+            delete collectionProps[collectionKey].refField;
           }
         }
       }
     }
 
+    // console.log(collectionProps);
     return collectionProps;
   }
 

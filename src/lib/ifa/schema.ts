@@ -13,9 +13,9 @@ import { MongodbError } from "../errors/MongodbError";
  * @param {object} [timestamps] - Optional timestamps for the collection.
  */
 export class Schema {
-  private options: any;
   private collectionName: string;
-  timestamps?: { timestamps: boolean };
+  private options: any;
+  private timestamps?: { timestamps: boolean };
   constructor(
     collectionName: string,
     options: any,
@@ -36,7 +36,6 @@ export class Schema {
       ...dbData,
       collectionName: this.collectionName,
       options: this.options,
-      timestamps: timestamps ? timestamps : null,
     };
   }
 
@@ -506,5 +505,9 @@ export class Schema {
         throw new MongodbError(error.message);
       }
     }
+  }
+
+  async populate() {
+    console.log(this.options);
   }
 }

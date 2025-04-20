@@ -1,6 +1,7 @@
 import { MongoClient } from "mongodb";
 import { SchemaHelper } from "../../helpers/schema";
 import { CustomError } from "../errors/CustomError";
+import { MongodbError } from "../errors/MongodbError";
 
 /**
  * @method createCollection
@@ -44,13 +45,27 @@ export async function createCollection(
       );
     }
 
-    const validationSchema = {
-      $jsonSchema: {
-        bsonType: "object",
-        required: SchemaHelper.getRequiredFields(collectionProps),
-        properties: SchemaHelper.getCollectionProps(collectionProps),
-      },
-    };
+    const requiredFields = SchemaHelper.getRequiredFields(collectionProps);
+
+    let validationSchema: any;
+
+    // check if the collection has required fields
+    if (requiredFields.length > 0) {
+      validationSchema = {
+        $jsonSchema: {
+          bsonType: "object",
+          required: requiredFields,
+          properties: SchemaHelper.getCollectionProps(collectionProps),
+        },
+      };
+    } else {
+      validationSchema = {
+        $jsonSchema: {
+          bsonType: "object",
+          properties: SchemaHelper.getCollectionProps(collectionProps),
+        },
+      };
+    }
 
     const existingCollections = await client
       .db(dbName)
@@ -94,6 +109,12 @@ export async function createCollection(
       }
     }
   } catch (error: unknown) {
-    console.error(error);
+    if (error instanceof CustomError && error.type) {
+      throw new CustomError(error.type, error.message);
+    }
+
+    if (error instanceof Error) {
+      throw new MongodbError(error.message);
+    }
   }
 }

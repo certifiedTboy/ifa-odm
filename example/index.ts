@@ -89,7 +89,11 @@ app.post("/blogs", async (req, res) => {
   try {
     const users = await user.find();
 
-    const newBlog = await blog.create({ title, desc, user: users[0]._id });
+    const newBlog = await blog.create({
+      title,
+      desc,
+      user: users?.query[1]._id,
+    });
 
     res.status(201).json(newBlog);
   } catch (error) {
@@ -104,7 +108,9 @@ app.get("/blogs", async (req, res) => {
   try {
     const blogs = await blog.find();
 
-    res.status(201).json(blogs);
+    const result = await blogs?.populate("user");
+
+    res.status(200).json(result);
   } catch (error) {
     console.log(error);
     if (error instanceof Error) {

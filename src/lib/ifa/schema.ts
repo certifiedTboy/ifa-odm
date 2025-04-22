@@ -15,6 +15,7 @@ export class Schema {
   private collectionName: string;
   private options: any;
   private timestamps?: { timestamps: boolean };
+  query: any;
   constructor(
     collectionName: string,
     options: any,
@@ -29,6 +30,7 @@ export class Schema {
       : options;
     this.collectionName = collectionName;
     const dbData = (global as any).dbData;
+    this.query = null;
 
     (global as any).dbData = {
       ...dbData,
@@ -153,22 +155,22 @@ export class Schema {
       if (options) {
         Validator.validateQueryDoc(options);
 
-        const result = await client
+        this.query = await client
           .db(dbName)
           .collection(this.collectionName)
           .find(options)
           .toArray();
 
-        return result;
+        return this;
       }
 
-      const result = await client
+      this.query = await client
         .db(dbName)
         .collection(this.collectionName)
         .find({})
         .toArray();
 
-      return result;
+      return this;
     } catch (error: unknown) {
       if (error instanceof CustomError && error.type) {
         throw new CustomError(error.type, error.message);
@@ -492,5 +494,29 @@ export class Schema {
         throw new MongodbError(error.message);
       }
     }
+  }
+
+  async populate(path: string) {
+    if (!this.query) throw new Error("You must call find() before populate().");
+
+    const { client, dbName } = (global as any).dbData;
+
+    const data = await client.db(dbName).collection(path).find({}).toArray();
+
+    const populatedData = [];
+    for (let item of this.query) {
+      for (let dataItem of data) {
+        if (item[path] && item?.[path].toString() === dataItem._id.toString()) {
+          populatedData.push({
+            ...item,
+            [path]: dataItem,
+          });
+        } else {
+          populatedData.push(item);
+        }
+      }
+    }
+
+    return populatedData;
   }
 }

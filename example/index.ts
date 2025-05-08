@@ -29,7 +29,7 @@ app.post("/users", async (req, res) => {
 
 app.get("/users", async (req, res) => {
   try {
-    const result = await user.find();
+    const result = await user.find().limit(1).exec();
     res.json(result);
   } catch (error) {
     if (error instanceof Error) {
@@ -41,7 +41,8 @@ app.get("/users", async (req, res) => {
 app.get("/users/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await user.findOneById(id);
+    const result = await user.findOne({ _id: id });
+
     res.json(result);
   } catch (error) {
     if (error instanceof Error) {
@@ -84,34 +85,38 @@ app.delete("/users/:id", async (req, res) => {
   }
 });
 
-app.post("/blogs", async (req, res) => {
-  const { title, desc } = req.body;
-  try {
-    const users = await user.find();
+// app.post("/blogs", async (req, res) => {
+//   const { title, desc } = req.body;
+//   try {
+//     const users = await user.find();
 
-    const newBlog = await blog.create({ title, desc, user: users[0]._id });
+//     const newBlog = await blog.create({
+//       title,
+//       desc,
+//       user: users?.query[1]._id,
+//     });
 
-    res.status(201).json(newBlog);
-  } catch (error) {
-    console.log(error);
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    }
-  }
-});
+//     res.status(201).json(newBlog);
+//   } catch (error) {
+//     console.log(error);
+//     if (error instanceof Error) {
+//       res.status(400).json({ error: error.message });
+//     }
+//   }
+// });
 
-app.get("/blogs", async (req, res) => {
-  try {
-    const blogs = await blog.find();
+// app.get("/blogs", async (req, res) => {
+//   try {
+//     const blogs = await blog.find().populate();
 
-    res.status(201).json(blogs);
-  } catch (error) {
-    console.log(error);
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
-    }
-  }
-});
+//     res.status(200).json(blogs);
+//   } catch (error) {
+//     console.log(error);
+//     if (error instanceof Error) {
+//       res.status(400).json({ error: error.message });
+//     }
+//   }
+// });
 
 async function startServer() {
   await connectDb();

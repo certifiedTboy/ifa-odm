@@ -96,17 +96,19 @@ describe("createMany method", () => {
 
 describe("find method", () => {
   it("throws an error if an invalid option is provided", async () => {
-    await expect(userSchema.find([])).rejects.toThrow("Invalid query provided");
+    await expect(userSchema.find([]).exec()).rejects.toThrow(
+      "Query filter must be a plain object or ObjectId"
+    );
   });
 
   it("returns all documents if no option is provided", async () => {
-    const result = await userSchema.find();
+    const result = await userSchema.find().exec();
     expect(result).toBeDefined();
     expect(result.length).toBeGreaterThan(0);
   });
 
   it("returns a matching array of documents if option is provided", async () => {
-    const result = await userSchema.find({ username: "testuser1" });
+    const result = await userSchema.find({ username: "testuser1" }).exec();
 
     expect(result).toBeDefined();
     expect(result.length).toEqual(1);
@@ -143,7 +145,7 @@ describe("findOneById method", () => {
   });
 
   it("returns a single document if a valid id is provided", async () => {
-    const existingUsers = await userSchema.find();
+    const existingUsers = await userSchema.find().exec();
 
     const result = await userSchema.findOneById(
       existingUsers[0]._id.toString()
@@ -209,7 +211,7 @@ describe("updateOneById method", () => {
   });
 
   it("throws an error if no update data is not provided", async () => {
-    const existingUsers = await userSchema.find();
+    const existingUsers = await userSchema.find().exec();
 
     await expect(
       userSchema.updateOneById(existingUsers[0]._id.toString(), {})
@@ -227,7 +229,7 @@ describe("updateOneById method", () => {
   // });
 
   it("updates a single document if valid id and update data are provided", async () => {
-    const existingUsers = await userSchema.find();
+    const existingUsers = await userSchema.find().exec();
     const result = await userSchema.updateOneById(
       existingUsers[0]._id.toString(),
       {
@@ -267,7 +269,7 @@ describe("updateOneById method", () => {
     };
 
     const getProducts = async (name: string) => {
-      return await productSchema.find({ name });
+      return await productSchema.find({ name }).exec();
     };
 
     it("throws an error if no update document is provided", async () => {
@@ -354,7 +356,7 @@ describe("removeOneById method", () => {
   });
 
   it("removes a single document if valid id is provided", async () => {
-    const existingUsers = await userSchema.find();
+    const existingUsers = await userSchema.find().exec();
 
     const result = await userSchema.removeOneById(
       existingUsers[0]._id.toString()

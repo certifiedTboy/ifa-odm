@@ -11,7 +11,7 @@ export class Schema {
   private _query: any;
   private _sort: any = null;
   private _limit: number | null = null;
-  private _populate: any = null;
+  private _populate: string[] = [];
   constructor(
     collectionName: string,
     options: any,
@@ -89,24 +89,22 @@ export class Schema {
     return this;
   }
 
+  populate(field: string) {
+    this._populate.push(field);
+    return this;
+  }
+
   findOne(options: any) {
     this._query = { ...options, struct: "single" };
     return this;
   }
 
   findOneById(id: string) {
-    try {
-      if (!id) throw new CustomError("InvalidQuery", "ObjectId is required");
-      Validator.validateObjectId(id);
+    if (!id) throw new CustomError("InvalidQuery", "ObjectId is required");
 
-      const { client, dbName } = (global as any).dbData;
-      return client
-        .db(dbName)
-        .collection(this.collectionName)
-        .findOne({ _id: new ObjectId(id) });
-    } catch (error: unknown) {
-      return Promise.reject(this.handleError(error));
-    }
+    this._query = { _id: id, struct: "single" };
+
+    return this;
   }
 
   updateOne(filter: any, options: any) {
@@ -229,10 +227,6 @@ export class Schema {
     }
   }
 
-  populate() {
-    console.log("Populate method is not implemented yet.");
-  }
-
   private handleError(error: unknown) {
     if (error instanceof CustomError && error.type) {
       return new CustomError(error.type, error.message);
@@ -279,15 +273,37 @@ export class Schema {
           .findOne(this._query);
       } else {
         delete this._query.struct; // remove struct prop from query
-        let cursor = client
-          .db(dbName)
-          .collection(this.collectionName)
-          .find(this._query);
 
-        if (this._sort) cursor = cursor.sort(this._sort);
-        if (this._limit !== null) cursor = cursor.limit(this._limit);
+        if (this._populate && this._populate.length > 0) {
+          // For documents with multiple references
+          return client
+            .db(dbName)
+            .collection(this.collectionName)
+            .aggregate([
+              {
+                $lookup: {
+                  from: this.options[this._populate[0]].ref,
+                  localField: this._populate[0],
+                  foreignField: this.options[this._populate[0]].refField,
+                  as: this._populate[0],
+                },
+              },
+              {
+                $unwind: "$user",
+              },
+            ])
+            .toArray();
+        } else {
+          let cursor = client
+            .db(dbName)
+            .collection(this.collectionName)
+            .find(this._query);
 
-        return cursor.toArray();
+          if (this._sort) cursor = cursor.sort(this._sort);
+          if (this._limit !== null) cursor = cursor.limit(this._limit);
+
+          return cursor.toArray();
+        }
       }
     } catch (error: unknown) {
       return Promise.reject(this.handleError(error));

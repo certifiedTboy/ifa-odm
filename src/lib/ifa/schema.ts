@@ -8,7 +8,7 @@ export class Schema {
   private collectionName: string;
   private options: any;
   private timestamps?: { timestamps: boolean };
-  private _query: any = {};
+  private _query: any;
   private _sort: any = null;
   private _limit: number | null = null;
   private _populate: any = null;
@@ -74,7 +74,7 @@ export class Schema {
   }
 
   find(query: any = {}) {
-    this._query = query;
+    this._query = { ...query, struct: "many" };
 
     return this;
   }
@@ -90,16 +90,8 @@ export class Schema {
   }
 
   findOne(options: any) {
-    try {
-      if (!options || Array.isArray(options))
-        throw new CustomError("InvalidQuery", "Invalid query provided");
-      Validator.validateQueryDoc(options);
-
-      const { client, dbName } = (global as any).dbData;
-      return client.db(dbName).collection(this.collectionName).findOne(options);
-    } catch (error: unknown) {
-      return Promise.reject(this.handleError(error));
-    }
+    this._query = { ...options, struct: "single" };
+    return this;
   }
 
   findOneById(id: string) {
@@ -251,19 +243,52 @@ export class Schema {
     return error;
   }
 
-  exec(): Promise<any[]> {
+  exec(): Promise<any> {
     try {
       const { client, dbName } = (global as any).dbData;
 
-      let cursor = client
-        .db(dbName)
-        .collection(this.collectionName)
-        .find(this._query);
+      if (this._query.struct === "single") {
+        delete this._query.struct; // remove struct prop from query
 
-      if (this._sort) cursor = cursor.sort(this._sort);
-      if (this._limit !== null) cursor = cursor.limit(this._limit);
+        /**
+         * validate query doc if no query is provided
+         * this is to prevent the user from passing an empty query object
+         */
+        if (Object.keys(this._query).length <= 0) {
+          Validator.validateQueryDoc(this._query);
+        }
 
-      return cursor.toArray();
+        let query;
+
+        if (this._query._id) {
+          /**
+           * validate objectId if _id is provided in the query
+           * this is to prevent the user from passing an invalid objectId
+           */
+          Validator.validateObjectId(this._query._id);
+          query = { _id: new ObjectId(this._query._id) };
+          return client
+            .db(dbName)
+            .collection(this.collectionName)
+            .findOne(query);
+        }
+
+        return client
+          .db(dbName)
+          .collection(this.collectionName)
+          .findOne(this._query);
+      } else {
+        delete this._query.struct; // remove struct prop from query
+        let cursor = client
+          .db(dbName)
+          .collection(this.collectionName)
+          .find(this._query);
+
+        if (this._sort) cursor = cursor.sort(this._sort);
+        if (this._limit !== null) cursor = cursor.limit(this._limit);
+
+        return cursor.toArray();
+      }
     } catch (error: unknown) {
       return Promise.reject(this.handleError(error));
     } finally {

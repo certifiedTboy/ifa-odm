@@ -14,6 +14,7 @@ const productSchema = new Schema(
   {
     name: { type: "string", required: true },
     price: { type: "number", required: true },
+    user: { type: "ref", ref: "users", refField: "_id" },
   },
   { timestamps: true }
 );
@@ -372,5 +373,28 @@ describe("removeMany method", () => {
     const result = await productSchema.removeMany({ name: "product4" });
     expect(result.deletedCount).toEqual(2);
     expect(result.acknowledged).toBe(true);
+  });
+});
+
+describe("data association", () => {
+  it("should create a new product with a reference to the user", async () => {
+    const users = await userSchema.find().exec();
+
+    const result = await productSchema.create({
+      name: "product5",
+      price: 100,
+      user: users[0]._id,
+    });
+    expect(result).toBeDefined();
+    expect(result.name).toBe("product5");
+    expect(result.price).toBe(100);
+    expect(result.user.toString()).toBe(users[0]._id.toString());
+  });
+
+  it("should populate the user field in the product document", async () => {
+    const products = await productSchema.find().populate("user").exec();
+    expect(products).toBeDefined();
+    expect(products.length).toBeGreaterThan(0);
+    expect(products[0].user.username).toBeDefined();
   });
 });

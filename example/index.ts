@@ -120,6 +120,19 @@ app.get("/blogs", async (req, res) => {
   }
 });
 
+app.get("/blogs/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const blogData = await blog.findOne({ _id: id }).populate("user").exec();
+    res.status(200).json(blogData);
+  } catch (error) {
+    console.log(error);
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+});
+
 async function startServer() {
   await connectDb();
   app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

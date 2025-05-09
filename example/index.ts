@@ -78,7 +78,7 @@ app.put("/users/:id", async (req, res) => {
 app.delete("/users/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await user.removeOneById(id);
+    const result = await user.removeOneById(id).exec();
     res.json(result);
   } catch (error) {
     if (error instanceof Error) {
@@ -107,18 +107,18 @@ app.delete("/users/:id", async (req, res) => {
 //   }
 // });
 
-// app.get("/blogs", async (req, res) => {
-//   try {
-//     const blogs = await blog.find().populate();
+app.get("/blogs", async (req, res) => {
+  try {
+    const blogs = await blog.find().populate("user").exec();
 
-//     res.status(200).json(blogs);
-//   } catch (error) {
-//     console.log(error);
-//     if (error instanceof Error) {
-//       res.status(400).json({ error: error.message });
-//     }
-//   }
-// });
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.log(error);
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+});
 
 async function startServer() {
   await connectDb();

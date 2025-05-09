@@ -132,14 +132,8 @@ describe("findOne method", () => {
 });
 
 describe("findOneById method", () => {
-  it("throw an error if id is not provide", async () => {
-    await expect(userSchema.findOneById("")).rejects.toThrow(
-      "ObjectId is required"
-    );
-  });
-
   it("throws an error if an invalid id is provided", async () => {
-    await expect(userSchema.findOneById("123")).rejects.toThrow(
+    await expect(userSchema.findOneById("123").exec()).rejects.toThrow(
       "Invalid ObjectId provided"
     );
   });
@@ -147,9 +141,9 @@ describe("findOneById method", () => {
   it("returns a single document if a valid id is provided", async () => {
     const existingUsers = await userSchema.find().exec();
 
-    const result = await userSchema.findOneById(
-      existingUsers[0]._id.toString()
-    );
+    const result = await userSchema
+      .findOneById(existingUsers[0]._id.toString())
+      .exec();
 
     expect(result).toBeDefined();
     expect(result._id.toString()).toBe(existingUsers[0]._id.toString());

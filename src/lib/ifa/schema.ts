@@ -261,37 +261,38 @@ export class Schema {
            */
           Validator.validateObjectId(this._query._id);
           query = { _id: new ObjectId(this._query._id) };
+        }
+
+        query = { ...this._query, ...query };
+
+        if (this._populate && this._populate.length > 0) {
+          const cursor = client
+            .db(dbName)
+            .collection(this.collectionName)
+            .aggregate(
+              SchemaHelper.getRefDocs(this.options, this._populate, query)
+            )
+            .toArray();
+
+          const promise = new Promise((resolve: any, reject: any) => {
+            resolve(cursor);
+          });
+
+          return promise.then((data: any) => data[0]);
+        } else {
           return client
             .db(dbName)
             .collection(this.collectionName)
             .findOne(query);
         }
-
-        return client
-          .db(dbName)
-          .collection(this.collectionName)
-          .findOne(this._query);
       } else {
         delete this._query.struct; // remove struct prop from query
 
         if (this._populate && this._populate.length > 0) {
-          // For documents with multiple references
           return client
             .db(dbName)
             .collection(this.collectionName)
-            .aggregate([
-              {
-                $lookup: {
-                  from: this.options[this._populate[0]].ref,
-                  localField: this._populate[0],
-                  foreignField: this.options[this._populate[0]].refField,
-                  as: this._populate[0],
-                },
-              },
-              {
-                $unwind: "$user",
-              },
-            ])
+            .aggregate(SchemaHelper.getRefDocs(this.options, this._populate))
             .toArray();
         } else {
           let cursor = client

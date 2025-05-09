@@ -206,4 +206,43 @@ export class SchemaHelper {
 
     return newArrayDoc;
   }
+
+  /**
+   * @method getRefDocs
+   * @description This method returns an array of documents from a reference collection
+   * @param {object} options - The options is the collection schema info
+   * @param {string[]} refFields - An array of all related data to the collection
+   * @param {object} query - The query to be used to find the documents in the reference collection
+   * @returns {Array} - An array of documents from the reference collection
+   */
+  static getRefDocs(
+    options: any,
+    refFields: string[],
+    query?: {}
+  ): Array<{
+    from: string;
+    localField: string;
+    foreignField: string;
+    as: string;
+  }> {
+    const refDocs: any[] = [];
+    for (const index in refFields) {
+      const $lookup = {
+        from: options[refFields[index]].ref,
+        localField: refFields[index],
+        foreignField: options[refFields[index]].refField,
+        as: refFields[index],
+      };
+
+      const $unwind = `$${refFields[index]}`;
+
+      refDocs.push({ $lookup }, { $unwind });
+    }
+
+    if (query && Object.keys(query).length > 0) {
+      return [{ $match: query }, ...refDocs];
+    }
+
+    return refDocs;
+  }
 }

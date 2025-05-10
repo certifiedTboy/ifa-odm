@@ -218,21 +218,32 @@ export class SchemaHelper {
   static getRefDocs(
     options: any,
     refFields: string[],
-    query?: {}
+    query?: {},
+    project?: {}
   ): Array<{
     from: string;
     localField: string;
     foreignField: string;
     as: string;
   }> {
-    const refDocs: any[] = [];
+    let refDocs: any[] = [];
     for (const index in refFields) {
-      const $lookup = {
+      let $lookup: {
+        from: string;
+        localField: string;
+        foreignField: string;
+        as: string;
+        pipeline?: Array<object>;
+      } = {
         from: options[refFields[index]].ref,
         localField: refFields[index],
         foreignField: options[refFields[index]].refField,
         as: refFields[index],
       };
+
+      if (project && Object.keys(project).length > 0) {
+        $lookup = { ...$lookup, pipeline: [{ $project: project }] };
+      }
 
       const $unwind = `$${refFields[index]}`;
 
@@ -240,7 +251,7 @@ export class SchemaHelper {
     }
 
     if (query && Object.keys(query).length > 0) {
-      return [{ $match: query }, ...refDocs];
+      refDocs = [{ $match: query }, ...refDocs];
     }
 
     return refDocs;

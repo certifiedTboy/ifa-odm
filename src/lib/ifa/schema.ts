@@ -12,6 +12,7 @@ export class Schema {
   private _sort: any = null;
   private _limit: number | null = null;
   private _populate: string[] = [];
+  private _project: any = null;
   constructor(
     collectionName: string,
     options: any,
@@ -89,8 +90,9 @@ export class Schema {
     return this;
   }
 
-  populate(field: string) {
+  populate(field: string, project?: {}) {
     this._populate.push(field);
+    this._project = project;
     return this;
   }
 
@@ -270,7 +272,12 @@ export class Schema {
             .db(dbName)
             .collection(this.collectionName)
             .aggregate(
-              SchemaHelper.getRefDocs(this.options, this._populate, query)
+              SchemaHelper.getRefDocs(
+                this.options,
+                this._populate,
+                query,
+                this._project
+              )
             )
             .toArray();
 
@@ -292,7 +299,14 @@ export class Schema {
           return client
             .db(dbName)
             .collection(this.collectionName)
-            .aggregate(SchemaHelper.getRefDocs(this.options, this._populate))
+            .aggregate(
+              SchemaHelper.getRefDocs(
+                this.options,
+                this._populate,
+                {},
+                this._project
+              )
+            )
             .toArray();
         } else {
           let cursor = client

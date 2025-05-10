@@ -3,6 +3,7 @@ const app = express();
 import { connectDb } from "./dbConfig";
 import user from "./user-model";
 import blog from "./blog-model";
+import rating from "./rating-model";
 
 app.use(express.json());
 
@@ -87,29 +88,33 @@ app.delete("/users/:id", async (req, res) => {
   }
 });
 
-// app.post("/blogs", async (req, res) => {
-//   const { title, desc } = req.body;
-//   try {
-//     const users = await user.find();
+app.post("/blogs", async (req, res) => {
+  const { title, desc } = req.body;
+  try {
+    const users = await user.find().exec();
 
-//     const newBlog = await blog.create({
-//       title,
-//       desc,
-//       user: users?.query[1]._id,
-//     });
+    const newBlog = await blog.create({
+      title,
+      desc,
+      user: users[0]._id,
+    });
 
-//     res.status(201).json(newBlog);
-//   } catch (error) {
-//     console.log(error);
-//     if (error instanceof Error) {
-//       res.status(400).json({ error: error.message });
-//     }
-//   }
-// });
+    res.status(201).json(newBlog);
+  } catch (error) {
+    console.log(error);
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+});
 
 app.get("/blogs", async (req, res) => {
   try {
-    const blogs = await blog.find().populate("user", { firstName: 0 }).exec();
+    const blogs = await blog
+      .find()
+      .populate("user", { firstName: 0 })
+      .populate("ratings")
+      .exec();
 
     res.status(200).json(blogs);
   } catch (error) {
@@ -126,6 +131,33 @@ app.get("/blogs/:id", async (req, res) => {
     res.status(200).json(blogData);
   } catch (error) {
     console.log(error);
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+});
+
+app.post("/ratings/:blogId", async (req, res) => {
+  try {
+    const { rating: ratingData } = req.body;
+    const { blogId } = req.params;
+
+    const users = await user.find().exec();
+    const blogToAddRating = await blog.findOne({ _id: blogId }).exec();
+
+    const newRating = await rating.create({
+      rating: ratingData,
+      user: users[0]._id,
+    });
+
+    if (newRating && blogToAddRating) {
+      blogToAddRating.ratings.push(newRating._id);
+
+      const result = await blog.persist(blogToAddRating);
+
+      res.status(201).json(result);
+    }
+  } catch (error: unknown) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message });
     }

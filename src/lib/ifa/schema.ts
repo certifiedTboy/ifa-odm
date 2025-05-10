@@ -2,12 +2,14 @@ import { ObjectId } from "mongodb";
 import { CustomError } from "../errors/CustomError";
 import { Validator } from "../../helpers/validators";
 import { SchemaHelper } from "../../helpers/schema";
+import { createCollection } from "./collection";
 import { MongodbError } from "../errors/MongodbError";
 
 export class Schema {
   private collectionName: string;
   private options: any;
   private timestamps?: { timestamps: boolean };
+  // private collectionInfo: any[] = [];
   private _query: any;
   private _sort: any = null;
   private _limit: number | null = null;
@@ -21,7 +23,10 @@ export class Schema {
     this.options = timestamps?.timestamps
       ? { ...options, createdAt: { type: "date" }, updatedAt: { type: "date" } }
       : options;
-    this.collectionName = collectionName;
+    this.collectionName =
+      collectionName[collectionName.length - 1] === "s"
+        ? collectionName
+        : `${collectionName}s`;
 
     const dbData = (global as any).dbData;
     (global as any).dbData = {
@@ -36,15 +41,38 @@ export class Schema {
       Validator.validateDoc(options);
       const { client, dbName } = (global as any).dbData;
 
+      /**
+       * create and update collection if it or does not exist before inserting
+       */
+      const promise = new Promise((resolve: any, reject: any) => {
+        try {
+          resolve(
+            createCollection(client, dbName, this.collectionName, this.options)
+          );
+        } catch (error: unknown) {
+          reject(error);
+        }
+      });
+
+      promise.then().catch((error: unknown) => console.log(error));
+
       const doc =
         this.options.createdAt && this.options.updatedAt
           ? SchemaHelper.updateDocTimestamps(options)
           : options;
 
+      let newDoc = { ...this.options, ...doc };
+
+      for (let key in newDoc) {
+        if (Array.isArray(newDoc[key]) && !newDoc[key][0].required) {
+          newDoc = { ...newDoc, [key]: [] };
+        }
+      }
+
       return client
         .db(dbName)
         .collection(this.collectionName)
-        .insertOne(doc)
+        .insertOne(newDoc)
         .then((result: any) =>
           client
             .db(dbName)
@@ -69,6 +97,23 @@ export class Schema {
           : options;
 
       return client.db(dbName).collection(this.collectionName).insertMany(docs);
+    } catch (error: unknown) {
+      return Promise.reject(this.handleError(error));
+    }
+  }
+
+  persist(options: any) {
+    try {
+      const { client, dbName } = (global as any).dbData;
+
+      return client
+        .db(dbName)
+        .collection(this.collectionName)
+        .findOneAndUpdate(
+          { _id: new ObjectId(options._id.toString()) },
+          { $set: { ...options } },
+          { returnDocument: "after" }
+        );
     } catch (error: unknown) {
       return Promise.reject(this.handleError(error));
     }

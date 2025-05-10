@@ -391,10 +391,20 @@ describe("data association", () => {
     expect(result.user.toString()).toBe(users[0]._id.toString());
   });
 
-  it("should populate the user field in the product document", async () => {
-    const products = await productSchema.find().populate("user").exec();
+  it("should populate the user field in the product document and should exclude password field form user object", async () => {
+    const products = await productSchema
+      .find()
+      .populate("user", { password: 0 })
+      .exec();
     expect(products).toBeDefined();
     expect(products.length).toBeGreaterThan(0);
     expect(products[0].user.username).toBeDefined();
+    expect(products[0].user.password).toBeUndefined();
+  });
+
+  it("should throw an error if the reference field is not found", async () => {
+    await expect(
+      productSchema.find().populate("nonexistentField").exec()
+    ).rejects.toThrow("Cannot read properties of undefined (reading 'ref')");
   });
 });

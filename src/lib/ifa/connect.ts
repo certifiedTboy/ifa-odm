@@ -1,5 +1,4 @@
 import { CustomError } from "../errors/CustomError";
-import { createCollection } from "./collection";
 
 /**
  * @method connect
@@ -8,13 +7,10 @@ import { createCollection } from "./collection";
 export async function connect() {
   try {
     const dbData = (global as any).dbData;
-    const { client, dbName, collectionName, options } = dbData;
+    const { client } = dbData;
 
     const response = await client.connect();
 
-    if (collectionName && collectionName.trim().length > 0) {
-      await createCollection(client, dbName, collectionName, options);
-    }
     return response.options.dbName;
   } catch (error) {
     throw new CustomError(

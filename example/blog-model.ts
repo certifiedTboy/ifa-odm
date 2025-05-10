@@ -6,7 +6,8 @@ const blog = new Schema(
     title: { type: "string" },
     desc: { type: "string" },
 
-    user: { type: "ref", ref: "user", refField: "_id", required: true },
+    user: { type: "ref", ref: "users", refField: "_id", required: true },
+    ratings: [{ type: "ref", ref: "ratings", refField: "_id" }],
   },
 
   { timestamps: true }

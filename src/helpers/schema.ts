@@ -227,19 +227,31 @@ export class SchemaHelper {
     as: string;
   }> {
     let refDocs: any[] = [];
+
     for (const index in refFields) {
       let $lookup: {
-        from: string;
-        localField: string;
-        foreignField: string;
-        as: string;
+        from?: string;
+        localField?: string;
+        foreignField?: string;
+        as?: string;
         pipeline?: Array<object>;
-      } = {
-        from: options[refFields[index]].ref,
-        localField: refFields[index],
-        foreignField: options[refFields[index]].refField,
-        as: refFields[index],
-      };
+      } = {};
+
+      if (Array.isArray(options[refFields[index]])) {
+        $lookup = {
+          from: options[refFields[index]][0].ref,
+          localField: refFields[index],
+          foreignField: options[refFields[index]][0].refField,
+          as: refFields[index],
+        };
+      } else {
+        $lookup = {
+          from: options[refFields[index]].ref,
+          localField: refFields[index],
+          foreignField: options[refFields[index]].refField,
+          as: refFields[index],
+        };
+      }
 
       if (project && Object.keys(project).length > 0) {
         $lookup = { ...$lookup, pipeline: [{ $project: project }] };

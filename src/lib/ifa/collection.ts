@@ -21,10 +21,6 @@ export async function createCollection(
 ): Promise<void> {
   // check if the collection name is pluralized
   // pluralize the collection name if it is not already pluralized
-  collectionName =
-    collectionName[collectionName.length - 1] === "s"
-      ? collectionName
-      : `${collectionName}s`;
 
   try {
     if (!dbName || dbName.trim().length === 0) {

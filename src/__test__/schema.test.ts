@@ -49,6 +49,7 @@ describe("create method", () => {
       username: "testuser1",
       password: "password123",
     });
+
     expect(result).toBeDefined();
     expect(result.acknowledged).toBe(true);
     expect(result.username).toBe("testuser1");
@@ -365,7 +366,7 @@ describe("removeOneById method", () => {
 describe("removeMany method", () => {
   it("throws an error if no filter is provided", async () => {
     await expect(productSchema.removeMany({})).rejects.toThrow(
-      "Invalid query prov"
+      "Invalid query provided"
     );
   });
 

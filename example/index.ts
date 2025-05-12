@@ -110,11 +110,7 @@ app.post("/blogs", async (req, res) => {
 
 app.get("/blogs", async (req, res) => {
   try {
-    const blogs = await blog
-      .find()
-      .populate("user", { firstName: 0 })
-      .populate("ratings")
-      .exec();
+    const blogs = await blog.find().populate("user").populate("ratings").exec();
 
     res.status(200).json(blogs);
   } catch (error) {
@@ -127,7 +123,11 @@ app.get("/blogs", async (req, res) => {
 app.get("/blogs/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const blogData = await blog.findOne({ _id: id }).populate("user").exec();
+    const blogData = await blog
+      .findOne({ _id: id })
+      .populate("user")
+      .populate("ratings")
+      .exec();
     res.status(200).json(blogData);
   } catch (error) {
     console.log(error);

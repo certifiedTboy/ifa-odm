@@ -45,6 +45,10 @@ export async function createCollection(
 
     let validationSchema: any;
 
+    // console.log(requiredFields);
+
+    // console.log(SchemaHelper.getCollectionProps(collectionProps));
+
     // check if the collection has required fields
     if (requiredFields.length > 0) {
       validationSchema = {
@@ -63,6 +67,9 @@ export async function createCollection(
       };
     }
 
+    /**
+     * @description Check if the collection already exists
+     */
     const existingCollections = await client
       .db(dbName)
       .listCollections()

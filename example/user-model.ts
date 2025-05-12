@@ -12,8 +12,6 @@ const user = new Schema(
       {
         score: { type: "number" },
         cgpa: { type: "number" },
-        minItems: 1,
-        maxItems: 5,
       },
     ],
     address: {
@@ -23,7 +21,7 @@ const user = new Schema(
       zipCode: { type: "string" },
       zip: [{ type: "string" }],
     },
-    hobbies: [{ type: "string", minItems: 1, maxItems: 5 }],
+    hobbies: [{ type: "string" }],
   },
   { timestamps: true }
 );

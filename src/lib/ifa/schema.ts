@@ -23,7 +23,7 @@ export class Schema {
   private _sort: any = null;
   private _limit: number | null = null;
   private _populate: string[] = [];
-  private _project: any = null;
+  private _project: any[] = [];
   constructor(
     collectionName: string,
     options: any,
@@ -215,7 +215,7 @@ export class Schema {
    */
   populate(field: string, project?: {}) {
     this._populate.push(field);
-    this._project = project;
+    this._project.push(project);
     return this;
   }
 
@@ -513,6 +513,6 @@ export class Schema {
     this._sort = null;
     this._limit = null;
     this._populate = [];
-    this._project = null;
+    this._project = [];
   }
 }

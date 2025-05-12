@@ -218,7 +218,7 @@ export class SchemaHelper {
     options: any,
     refFields: string[],
     query?: {},
-    project?: {}
+    project?: any
   ): Array<{
     from: string;
     localField: string;
@@ -226,6 +226,8 @@ export class SchemaHelper {
     as: string;
   }> {
     let refDocs: any[] = [];
+
+    console.log(project);
 
     for (const index in refFields) {
       let $lookup: {
@@ -244,6 +246,10 @@ export class SchemaHelper {
           as: refFields[index],
         };
 
+        if (project && Object.keys(project[index]).length > 0) {
+          $lookup = { ...$lookup, pipeline: [{ $project: project[index] }] };
+        }
+
         refDocs.push({ $lookup });
       } else {
         $lookup = {
@@ -253,13 +259,13 @@ export class SchemaHelper {
           as: refFields[index],
         };
 
+        if (project && Object.keys(project[index]).length > 0) {
+          $lookup = { ...$lookup, pipeline: [{ $project: project[index] }] };
+        }
+
         const $unwind = `$${refFields[index]}`;
 
         refDocs.push({ $lookup }, { $unwind });
-      }
-
-      if (project && Object.keys(project).length > 0) {
-        $lookup = { ...$lookup, pipeline: [{ $project: project }] };
       }
     }
 

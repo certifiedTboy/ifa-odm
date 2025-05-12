@@ -29,9 +29,6 @@ app.post("/users", async (req, res) => {
     age,
     isGraduated,
     email,
-    records,
-    hobbies,
-    address,
   };
   try {
     const result = await user.create(userData);
@@ -108,11 +105,18 @@ app.post("/blogs", async (req, res) => {
   try {
     const users = await user.find().exec();
 
-    const newBlog = await blog.create({
-      title,
-      desc,
-      user: users[0]._id,
-    });
+    const newBlog = await blog.createMany([
+      {
+        title,
+        desc,
+        user: users[0]._id,
+      },
+      {
+        title,
+        desc,
+        user: users[0]._id,
+      },
+    ]);
 
     res.status(201).json(newBlog);
   } catch (error) {

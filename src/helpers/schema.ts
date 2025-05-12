@@ -150,7 +150,7 @@ export class SchemaHelper {
    * @description This method updates the createdAt and updatedAt timestamps of a document
    * @param {Object} doc - The document to be updated
    */
-  static updateDocTimestamps(doc: {}) {
+  static updateDocTimestamps(doc: object) {
     const newDoc = { ...doc, createdAt: new Date(), updatedAt: new Date() };
     return newDoc;
   }

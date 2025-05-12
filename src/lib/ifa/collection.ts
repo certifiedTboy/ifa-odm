@@ -45,10 +45,6 @@ export async function createCollection(
 
     let validationSchema: any;
 
-    // console.log(requiredFields);
-
-    // console.log(SchemaHelper.getCollectionProps(collectionProps));
-
     // check if the collection has required fields
     if (requiredFields.length > 0) {
       validationSchema = {

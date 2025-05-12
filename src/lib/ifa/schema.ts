@@ -147,7 +147,32 @@ export class Schema {
           ? SchemaHelper.updateArrayDocTimestamps(options)
           : options;
 
-      return client.db(dbName).collection(this.collectionName).insertMany(docs);
+      let newDocs: any[] = [];
+
+      for (let key in docs) {
+        newDocs.push({ ...this.options, ...docs[key] });
+      }
+
+      for (let doc of newDocs) {
+        for (let key in doc) {
+          if (
+            Array.isArray(doc[key]) &&
+            !doc[key][0].required &&
+            doc[key][0].ref
+          ) {
+            const foundDoc = newDocs.find(
+              (item: any) => item[key] === doc[key]
+            );
+
+            foundDoc[key] = [];
+          }
+        }
+      }
+
+      return client
+        .db(dbName)
+        .collection(this.collectionName)
+        .insertMany(newDocs);
     } catch (error: unknown) {
       return Promise.reject(this.handleError(error));
     }

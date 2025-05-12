@@ -2,7 +2,7 @@ import { Ifa } from "../src/lib/ifa/model";
 import { connect } from "../src/lib/ifa/connect";
 
 let dbUri = "mongodb://localhost:27017/";
-let dbName = "testing-new3";
+let dbName = "testing-new4";
 
 new Ifa(dbUri, dbName);
 

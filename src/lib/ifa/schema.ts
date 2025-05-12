@@ -213,9 +213,11 @@ export class Schema {
    * @param {string} field - The field to be populated in the documents.
    * @param {object} project - It provides which fields to include or exclude from the populated documents.
    */
-  populate(field: string, project?: {}) {
+  populate(field: string, project?: object) {
     this._populate.push(field);
+
     this._project.push(project);
+
     return this;
   }
 

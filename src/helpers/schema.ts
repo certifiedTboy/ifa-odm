@@ -1,3 +1,5 @@
+import { CustomError } from "../lib/errors/CustomError";
+
 export class SchemaHelper {
   /**
    * @method getUniqueProps
@@ -219,15 +221,8 @@ export class SchemaHelper {
     refFields: string[],
     query?: {},
     project?: any
-  ): Array<{
-    from: string;
-    localField: string;
-    foreignField: string;
-    as: string;
-  }> {
+  ) {
     let refDocs: any[] = [];
-
-    console.log(project);
 
     for (const index in refFields) {
       let $lookup: {
@@ -246,7 +241,7 @@ export class SchemaHelper {
           as: refFields[index],
         };
 
-        if (project && Object.keys(project[index]).length > 0) {
+        if (project[index] && Object.keys(project[index]).length > 0) {
           $lookup = { ...$lookup, pipeline: [{ $project: project[index] }] };
         }
 
@@ -259,7 +254,7 @@ export class SchemaHelper {
           as: refFields[index],
         };
 
-        if (project && Object.keys(project[index]).length > 0) {
+        if (project[index] && Object.keys(project[index]).length > 0) {
           $lookup = { ...$lookup, pipeline: [{ $project: project[index] }] };
         }
 

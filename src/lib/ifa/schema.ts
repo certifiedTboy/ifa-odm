@@ -79,7 +79,12 @@ export class Schema {
       let newDoc = { ...this.options, ...doc };
 
       for (let key in newDoc) {
-        if (Array.isArray(newDoc[key]) && !newDoc[key][0].required) {
+        if (
+          Array.isArray(newDoc[key]) &&
+          !newDoc[key][0].required &&
+          newDoc[key][0].ref
+        ) {
+          console.log(newDoc[key]);
           newDoc = { ...newDoc, [key]: [] };
         }
       }
@@ -406,16 +411,6 @@ export class Schema {
     }
   }
 
-  private handleError(error: unknown) {
-    if (error instanceof CustomError && error.type) {
-      return new CustomError(error.type, error.message);
-    }
-    if (error instanceof Error) {
-      return new MongodbError(error.message);
-    }
-    return error;
-  }
-
   /**
    * @method exec
    * @description This method executes the query and returns the result.
@@ -508,6 +503,16 @@ export class Schema {
     } finally {
       this._resetBuilderState(); // clean after execution
     }
+  }
+
+  private handleError(error: unknown) {
+    if (error instanceof CustomError && error.type) {
+      return new CustomError(error.type, error.message);
+    }
+    if (error instanceof Error) {
+      return new MongodbError(error.message);
+    }
+    return error;
   }
 
   private _resetBuilderState() {

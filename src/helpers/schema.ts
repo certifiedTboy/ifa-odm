@@ -42,63 +42,28 @@ export class SchemaHelper {
       if (Array.isArray(collectionData[collectionKey])) {
         // check if the collectionData is an array of objects
         if (collectionData[collectionKey][0].type) {
-          // TODO
-          // check if type is === "ref"
-          // update associated data fields if its an array
-
-          if (collectionData[collectionKey][0]?.maxItems) {
-            collectionProps[collectionKey] = {
-              bsonType: "array",
-              maxItems: collectionData[collectionKey][0]?.maxItems,
-              minItems: collectionData[collectionKey][0]?.minItems,
-              items: {
-                bsonType:
-                  collectionData[collectionKey][0].type === "ref"
-                    ? "objectId"
-                    : collectionData[collectionKey][0].type,
-              },
-            };
-          } else {
-            collectionProps[collectionKey] = {
-              bsonType: "array",
-              items: {
-                bsonType:
-                  collectionData[collectionKey][0].type === "ref"
-                    ? "objectId"
-                    : collectionData[collectionKey][0].type,
-              },
-            };
-          }
+          collectionProps[collectionKey] = {
+            bsonType: "array",
+            items: {
+              bsonType:
+                collectionData[collectionKey][0].type === "ref"
+                  ? "objectId"
+                  : collectionData[collectionKey][0].type,
+            },
+          };
         } else {
-          if (collectionData[collectionKey][0]?.maxItems) {
-            collectionProps[collectionKey] = {
-              bsonType: "array",
-              maxItems: collectionData[collectionKey][0]?.maxItems,
-              minItems: collectionData[collectionKey][0]?.minItems,
-              items: {
-                bsonType: "object",
-                properties: {},
-              },
-            };
-          } else {
-            collectionProps[collectionKey] = {
-              bsonType: "array",
-              maxItems: collectionData[collectionKey][0]?.maxItems,
-              minItems: collectionData[collectionKey][0]?.minItems,
-              items: {
-                bsonType: "object",
-                properties: {},
-              },
-            };
-          }
+          collectionProps[collectionKey] = {
+            bsonType: "array",
+
+            items: {
+              bsonType: "object",
+              properties: {},
+            },
+          };
 
           for (let item of collectionData[collectionKey]) {
             for (let key in item) {
-              if (
-                !collectionProps[collectionKey].items.properties[key] &&
-                key !== "maxItems" &&
-                key !== "minItems"
-              ) {
+              if (!collectionProps[collectionKey].items.properties[key]) {
                 collectionProps[collectionKey].items.properties[key] = {
                   ...item[key],
                   bsonType: (item[key].type = item[key].type),
@@ -160,7 +125,6 @@ export class SchemaHelper {
       }
     }
 
-    // console.log(collectionProps);
     return collectionProps;
   }
 

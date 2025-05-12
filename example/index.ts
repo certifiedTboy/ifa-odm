@@ -4,19 +4,34 @@ import { connectDb } from "./dbConfig";
 import user from "./user-model";
 import blog from "./blog-model";
 import rating from "./rating-model";
+import { Transaction } from "../src";
 
 app.use(express.json());
 
 const PORT = 3000;
 
 app.post("/users", async (req, res) => {
-  const { firstName, lastName, age, isGraduated, email } = req.body;
+  // console.log(req.body);
+  const {
+    firstName,
+    lastName,
+    age,
+    isGraduated,
+    email,
+    records,
+    hobbies,
+    address,
+  } = req.body;
+
   const userData = {
     firstName,
     lastName,
     age,
     isGraduated,
     email,
+    records,
+    hobbies,
+    address,
   };
   try {
     const result = await user.create(userData);
@@ -110,11 +125,7 @@ app.post("/blogs", async (req, res) => {
 
 app.get("/blogs", async (req, res) => {
   try {
-    const blogs = await blog
-      .find()
-      .populate("user", { firstName: 1 })
-      .populate("ratings")
-      .exec();
+    const blogs = await blog.find().populate("user").populate("ratings").exec();
 
     res.status(200).json(blogs);
   } catch (error) {
@@ -165,6 +176,25 @@ app.post("/ratings/:blogId", async (req, res) => {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message });
     }
+  }
+});
+
+app.post("/transaction", async (req, res) => {
+  try {
+    const userData = {
+      firstName: "tosin",
+      lastName: "Adebisi",
+      age: 20,
+      isGraduated: false,
+      email: "etosin200@gmail.com",
+    };
+    const transaction = new Transaction();
+
+    transaction.createTransactionSession();
+
+    await transaction.runWithTransaction(() => user.create(userData)).exec();
+  } catch (error: unknown) {
+    console.log(error);
   }
 });
 

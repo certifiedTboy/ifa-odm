@@ -243,6 +243,8 @@ export class SchemaHelper {
           foreignField: options[refFields[index]][0].refField,
           as: refFields[index],
         };
+
+        refDocs.push({ $lookup });
       } else {
         $lookup = {
           from: options[refFields[index]].ref,
@@ -250,26 +252,20 @@ export class SchemaHelper {
           foreignField: options[refFields[index]].refField,
           as: refFields[index],
         };
+
+        const $unwind = `$${refFields[index]}`;
+
+        refDocs.push({ $lookup }, { $unwind });
       }
 
       if (project && Object.keys(project).length > 0) {
         $lookup = { ...$lookup, pipeline: [{ $project: project }] };
-      }
-
-      if (!Array.isArray(options[refFields[index]])) {
-        const $unwind = `$${refFields[index]}`;
-
-        refDocs.push({ $lookup }, { $unwind });
-      } else {
-        refDocs.push({ $lookup });
       }
     }
 
     if (query && Object.keys(query).length > 0) {
       refDocs = [{ $match: query }, ...refDocs];
     }
-
-    console.log(refDocs);
 
     return refDocs;
   }

@@ -183,7 +183,6 @@ export class SchemaHelper {
    * @method updateDocTimestamps
    * @description This method updates the createdAt and updatedAt timestamps of a document
    * @param {Object} doc - The document to be updated
-   * @returns {Object} - The updated document with new timestamps
    */
   static updateDocTimestamps(doc: {}) {
     const newDoc = { ...doc, createdAt: new Date(), updatedAt: new Date() };
@@ -257,14 +256,20 @@ export class SchemaHelper {
         $lookup = { ...$lookup, pipeline: [{ $project: project }] };
       }
 
-      const $unwind = `$${refFields[index]}`;
+      if (!Array.isArray(options[refFields[index]])) {
+        const $unwind = `$${refFields[index]}`;
 
-      refDocs.push({ $lookup }, { $unwind });
+        refDocs.push({ $lookup }, { $unwind });
+      } else {
+        refDocs.push({ $lookup });
+      }
     }
 
     if (query && Object.keys(query).length > 0) {
       refDocs = [{ $match: query }, ...refDocs];
     }
+
+    console.log(refDocs);
 
     return refDocs;
   }

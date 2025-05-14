@@ -212,8 +212,12 @@ export class Schema {
    * It must be called with the exec method to execute the query.
    * @param {object} query - The query to be used to find the documents in the collection.
    */
-  find(query: any = {}) {
+  find(query: object = {}, project?: object) {
     this._query = { ...query, struct: "many" };
+
+    if (project) {
+      this._project.push(project);
+    }
 
     return this;
   }
@@ -263,8 +267,13 @@ export class Schema {
    * It must be called with the exec method to execute the query.
    * @param {object} options - The query to be used to find the document in the collection.
    */
-  findOne(options: any) {
+  findOne(options: object, project?: object) {
     this._query = { ...options, struct: "single" };
+
+    if (project) {
+      this._project.push(project);
+    }
+
     return this;
   }
 
@@ -275,10 +284,14 @@ export class Schema {
    * It must be called with the exec method to execute the query.
    * @param {string} id - The id of the document to be found in the collection.
    */
-  findOneById(id: string) {
+  findOneById(id: string, project?: object) {
     if (!id) throw new CustomError("InvalidQuery", "ObjectId is required");
 
     this._query = { _id: id, struct: "single" };
+
+    if (project) {
+      this._project.push(project);
+    }
 
     return this;
   }
@@ -498,7 +511,12 @@ export class Schema {
           return client
             .db(dbName)
             .collection(this.collectionName)
-            .findOne(query);
+            .findOne(
+              query,
+              this._project && this._project.length > 0
+                ? { projection: this._project[0] }
+                : {}
+            );
         }
       } else {
         delete this._query.struct; // remove struct prop from query
@@ -520,7 +538,12 @@ export class Schema {
           let cursor = client
             .db(dbName)
             .collection(this.collectionName)
-            .find(this._query);
+            .find(
+              this._query,
+              this._project && this._project.length > 0
+                ? { projection: this._project[0] }
+                : {}
+            );
 
           if (this._sort) cursor = cursor.sort(this._sort);
           if (this._limit !== null) cursor = cursor.limit(this._limit);

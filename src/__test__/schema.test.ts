@@ -119,6 +119,18 @@ describe("find method", () => {
   });
 });
 
+describe("find projection method", () => {
+  it("removes the specified fields from the result", async () => {
+    const result = await userSchema
+      .find({ username: "testuser1" }, { password: 0 })
+      .exec();
+
+    expect(result).toBeDefined();
+    expect(result.length).toEqual(1);
+    expect(result[0].password).toBeUndefined();
+  });
+});
+
 describe("findOne method", () => {
   it("throws an error if no option or an invalid option is provided", async () => {
     await expect(userSchema.findOne([]).exec()).rejects.toThrow(
@@ -130,6 +142,16 @@ describe("findOne method", () => {
     const result = await userSchema.findOne({ username: "testuser1" }).exec();
     expect(result).toBeDefined();
     expect(result.username).toBe("testuser1");
+  });
+});
+
+describe("findOneById or findOne projection method", () => {
+  it("removes the specified fields from the result", async () => {
+    const result = await userSchema
+      .findOne({ username: "testuser1" }, { password: 0 })
+      .exec();
+    expect(result).toBeDefined();
+    expect(result.password).toBeUndefined();
   });
 });
 

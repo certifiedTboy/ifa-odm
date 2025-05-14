@@ -41,7 +41,7 @@ app.post("/users", async (req, res) => {
 
 app.get("/users", async (req, res) => {
   try {
-    const result = await user.find().exec();
+    const result = await user.find({}, { firstName: 0 }).exec();
     res.json(result);
   } catch (error) {
     if (error instanceof Error) {
@@ -53,9 +53,7 @@ app.get("/users", async (req, res) => {
 app.get("/users/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await user.findOne({ _id: id }).exec();
-
-    console.log(result);
+    const result = await user.findOne({ _id: id }, { firstName: 0 }).exec();
 
     res.json(result);
   } catch (error) {

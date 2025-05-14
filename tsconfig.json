@@ -108,5 +108,5 @@
     
   },
 
-  "exclude": ["node_modules", "build", "src/__mocks__", "src/test", "**/*.spec.ts", "**/*.test.ts"], /* Exclude files from compilation. */
+  "exclude": ["build", "src/__mocks__", "src/test", "**/*.spec.ts", "**/*.test.ts"], /* Exclude files from compilation. */
 }

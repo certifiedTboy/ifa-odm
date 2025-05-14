@@ -21,7 +21,6 @@ class Transaction {
         }
       });
     } catch (error: unknown) {
-      console.log(error);
       if (error instanceof Error) {
         console.error("Transaction failed: ", error.message);
       } else {
@@ -31,7 +30,6 @@ class Transaction {
       this.transactionSession.endSession();
       this.transactionSession = null;
       this.operations = [];
-      console.log("Transaction session ended");
     }
   }
 }

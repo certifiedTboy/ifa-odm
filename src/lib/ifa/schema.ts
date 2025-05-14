@@ -71,6 +71,9 @@ export class Schema {
 
       promise.then().catch((error: unknown) => console.log(error));
 
+      /**
+       * update document timestamps if createdAt and updatedAt are present
+       */
       const doc =
         this.options.createdAt && this.options.updatedAt
           ? SchemaHelper.updateDocTimestamps(options)
@@ -84,7 +87,6 @@ export class Schema {
           !newDoc[key][0].required &&
           newDoc[key][0].ref
         ) {
-          console.log(newDoc[key]);
           newDoc = { ...newDoc, [key]: [] };
         }
       }
@@ -142,6 +144,9 @@ export class Schema {
 
       promise.then().catch((error: unknown) => console.log(error));
 
+      /**
+       * update document timestamps if createdAt and updatedAt are present
+       */
       const docs =
         this.options.createdAt && this.options.updatedAt
           ? SchemaHelper.updateArrayDocTimestamps(options)

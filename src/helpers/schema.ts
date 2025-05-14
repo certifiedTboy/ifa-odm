@@ -183,7 +183,7 @@ export class SchemaHelper {
   static getRefDocs(
     options: any,
     refFields: string[],
-    query?: {},
+    query?: object,
     project?: any
   ) {
     let refDocs: any[] = [];

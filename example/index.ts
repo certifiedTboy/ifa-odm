@@ -4,7 +4,7 @@ import { connectDb } from "./dbConfig";
 import user from "./user-model";
 import blog from "./blog-model";
 import rating from "./rating-model";
-import { Transaction } from "../src";
+import { Transaction } from "..";
 
 app.use(express.json());
 
@@ -185,18 +185,17 @@ app.post("/ratings/:blogId", async (req, res) => {
 
 app.post("/transaction", async (req, res) => {
   try {
-    const userData = {
-      firstName: "tosin",
-      lastName: "Adebisi",
-      age: 20,
-      isGraduated: false,
-      email: "etosin200@gmail.com",
+    const users = await user.find().exec();
+    const blogData = {
+      title: "new blog",
+      desc: "new blog desc",
+      user: users[0]._id,
     };
     const transaction = new Transaction();
 
     transaction.createTransactionSession();
 
-    await transaction.runWithTransaction(() => user.create(userData)).exec();
+    await transaction.runWithTransaction(() => blog.create(blogData)).exec();
   } catch (error: unknown) {
     console.log(error);
   }

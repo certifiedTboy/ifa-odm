@@ -35,15 +35,6 @@ describe("create method", () => {
     );
   });
 
-  // it("throws an error if document property type does not match collection schema type", async () => {
-  //   await expect(
-  //     userSchema.create({
-  //       username: 12215414,
-  //       password: "1225262626",
-  //     })
-  //   ).rejects.toThrow("Schema validation failed");
-  // });
-
   it("create a new document", async () => {
     const result = await userSchema.create({
       username: "testuser1",
@@ -64,20 +55,6 @@ describe("createMany method", () => {
     );
   });
 
-  // it("throws an error if document property type does not match collection schema type", async () => {
-  //   const doc = [
-  //     {
-  //       username: "testuser2",
-  //       password: 123,
-  //     },
-  //     { username: "testuser3", password: "password123" },
-  //   ];
-
-  //   await expect(userSchema.createMany(doc)).rejects.toThrow(
-  //     "Schema validation failed"
-  //   );
-  // });
-
   it("create a new document", async () => {
     const doc = [
       {
@@ -97,12 +74,6 @@ describe("createMany method", () => {
 });
 
 describe("find method", () => {
-  // it("throws an error if an invalid option is provided", async () => {
-  //   await expect(userSchema.find([]).exec()).rejects.toThrow(
-  //     "Query filter must be a plain object or ObjectId"
-  //   );
-  // });
-
   it("returns all documents if no option is provided", async () => {
     const result = await userSchema.find().exec();
     expect(result).toBeDefined();
@@ -128,6 +99,29 @@ describe("find projection method", () => {
     expect(result).toBeDefined();
     expect(result.length).toEqual(1);
     expect(result[0].password).toBeUndefined();
+  });
+});
+
+describe("sort method", () => {
+  it("should sorts documents in descending order", async () => {
+    const result = await userSchema
+      .find({}, { password: 0 })
+      .sort({ username: -1 })
+      .exec();
+
+    expect(result).toBeDefined();
+    expect(result[0].username).toEqual("testuser3");
+    expect(result[1].username).toEqual("testuser2");
+    expect(result[2].username).toEqual("testuser1");
+  });
+});
+
+describe("limit method", () => {
+  it("limites the number of documents returned", async () => {
+    const result = await userSchema.find().limit(1).exec();
+
+    expect(result).toBeDefined();
+    expect(result.length).toEqual(1);
   });
 });
 

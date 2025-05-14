@@ -243,3 +243,23 @@ app.get("/blogs", async (req, res) => {
   }
 });
 ```
+
+## Query Response Projection
+
+ifa-odm supports query projection for `find findOne and findOneById` methods. The projection object to a query defines which field of the query document to be added or removed
+
+```javascript
+await user.find({}, { firstName: 0 }).exec();
+
+await user.findOneById("6822142cf7643e7fab634770", { firstName: 0 }).exec();
+```
+
+## Sort and Limit Operations
+
+ifa-odm supports the sort and limit operations. With the limit operation, database read queries can be paginatted while dealing with large data-set.
+
+```javascript
+await user.find({}, { firstName: 0 }).limit(5).sort({ createdAt: -1 }).exec();
+```
+
+**Note** for the sort operation, "-1" sorts documents in a descending order, while "1" sorts documents in an ascending order

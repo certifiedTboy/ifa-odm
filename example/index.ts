@@ -41,7 +41,10 @@ app.post("/users", async (req, res) => {
 
 app.get("/users", async (req, res) => {
   try {
-    const result = await user.find({}, { firstName: 0 }).exec();
+    const result = await user
+      .find({}, { firstName: 0 })
+      .sort({ firstName: -1 })
+      .exec();
     res.json(result);
   } catch (error) {
     if (error instanceof Error) {

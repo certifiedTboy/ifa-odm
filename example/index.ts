@@ -4,7 +4,6 @@ import { connectDb } from "./dbConfig";
 import user from "./user-model";
 import blog from "./blog-model";
 import rating from "./rating-model";
-import { Transaction } from "..";
 
 app.use(express.json());
 
@@ -183,23 +182,23 @@ app.post("/ratings/:blogId", async (req, res) => {
   }
 });
 
-app.post("/transaction", async (req, res) => {
-  try {
-    const users = await user.find().exec();
-    const blogData = {
-      title: "new blog",
-      desc: "new blog desc",
-      user: users[0]._id,
-    };
-    const transaction = new Transaction();
+// app.post("/transaction", async (req, res) => {
+//   try {
+//     const users = await user.find().exec();
+//     const blogData = {
+//       title: "new blog",
+//       desc: "new blog desc",
+//       user: users[0]._id,
+//     };
+//     const transaction = new Transaction();
 
-    transaction.createTransactionSession();
+//     transaction.createTransactionSession();
 
-    await transaction.runWithTransaction(() => blog.create(blogData)).exec();
-  } catch (error: unknown) {
-    console.log(error);
-  }
-});
+//     await transaction.runWithTransaction(() => blog.create(blogData)).exec();
+//   } catch (error: unknown) {
+//     console.log(error);
+//   }
+// });
 
 async function startServer() {
   await connectDb();

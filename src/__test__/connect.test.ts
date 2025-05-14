@@ -1,11 +1,13 @@
-import { connect } from "../lib/ifa/connect";
+import { Ifa } from "../lib/ifa/model";
 
 describe("connect function", () => {
-  it("should connect to the database and database collection created", async () => {
-    const dbData = (global as any).dbData;
+  it("should connect to the database", async () => {
+    const { connectionString, dbName } = (global as any).dbData;
 
-    const response = await connect();
+    const ifa = new Ifa(connectionString, dbName);
 
-    expect(response).toEqual(dbData.dbName);
+    const response = await ifa.connect();
+
+    expect(response).toEqual(dbName);
   });
 });

@@ -1,14 +1,13 @@
 import { Ifa } from "../src/lib/ifa/model";
-import { connect } from "../src/lib/ifa/connect";
 
 let dbUri = "mongodb://localhost:27017/";
 let dbName = "testing-new4";
 
-new Ifa(dbUri, dbName);
+const ifa = new Ifa(dbUri, dbName);
 
 export const connectDb = async () => {
   try {
-    await connect();
+    await ifa.connect();
 
     console.log("connection successfull");
   } catch (error) {

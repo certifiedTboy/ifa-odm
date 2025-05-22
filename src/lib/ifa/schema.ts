@@ -18,7 +18,6 @@ export class Schema {
   private collectionName: string;
   private options: any;
   private timestamps?: { timestamps: boolean };
-  // private collectionInfo: any[] = [];
   private _query: any;
   private _sort: any = null;
   private _limit: number | null = null;
@@ -32,12 +31,17 @@ export class Schema {
     this.options = timestamps?.timestamps
       ? { ...options, createdAt: { type: "date" }, updatedAt: { type: "date" } }
       : options;
+
+    /**
+     * pluralize collection name if it does not end with 's'
+     */
     this.collectionName =
       collectionName[collectionName.length - 1] === "s"
         ? collectionName
         : `${collectionName}s`;
 
     const dbData = (global as any).dbData;
+
     (global as any).dbData = {
       ...dbData,
       collectionName: this.collectionName,
@@ -458,7 +462,6 @@ export class Schema {
    * @method exec
    * @description This method executes the query and returns the result.
    * It must be called after the find, findOne, findOneById, sort, populate, or limit methods to execute the query.
-   *
    */
   exec(): Promise<any> {
     try {

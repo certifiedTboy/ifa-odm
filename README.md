@@ -1,6 +1,6 @@
 # ifa-odm
 
-Ifa-odm is a [MongoDB](https://www.mongodb.org/) for basic basic mongo db crud operations and $Jsonschema Validation. ifa-odm supports [Node.js](https://nodejs.org/en/).
+Ifa-odm is a [MongoDB](https://www.mongodb.org/) Object Document Mapper (ODM) for basic mongo db crud operations and $Jsonschema Validation. ifa-odm supports [Node.js](https://nodejs.org/en/) and [Express.js](https://expressjs.com/)
 
 ## Documentation
 
@@ -40,13 +40,20 @@ ifa.connect().then(() => console.log("database connected successfully"));
 Models are defined through the `Schema` interface.
 
 ```javascript
-// Using Node.js `require()`
+/**
+ * Using Node.js `require()`
+ */
 const { Schema } = require("ifa-odm");
 
-// Using ES6 imports
+/**
+ * Using ES6 imports
+ */
 import { Schema } from "ifa-odm";
 
-// A typical model and possible document structure with support for embedded associated data for both arrays, objects and nexted arrays and nexted objects
+/**
+ * A typical model and possible document structure with support for embedded associated data for both arrays, objects and
+ * nexted arrays and nexted objects
+ */
 const user = new Schema(
   "user",
   {
@@ -77,10 +84,9 @@ const user = new Schema(
 ## Crud operations with ifa-odm
 
 ```javascript
-// a typical post request in an express application
-
--Create;
-
+/**
+ * a typical post request in an express application
+ */
 app.post("/users", async (req, res) => {
   const userData = {
     firstName: "John",
@@ -106,7 +112,6 @@ app.post("/users", async (req, res) => {
   }
 });
 
--Read;
 app.get("/users", async (req, res) => {
   try {
     const result = await user.find().exec();
@@ -127,7 +132,6 @@ app.get("/users/:id", async (req, res) => {
   }
 });
 
--Update;
 app.put("/users/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -148,7 +152,6 @@ app.put("/users/:id", async (req, res) => {
   }
 });
 
--Delete;
 app.delete("/users/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -228,7 +231,9 @@ app.get("/blogs", async (req, res) => {
   }
 });
 
-// ifa-odm also gives you control on which fields to be added to removed
+/**
+ *  ifa-odm also gives you control on which fields to be added to removed
+ */
 app.get("/blogs", async (req, res) => {
   try {
     const blogs = await blog
